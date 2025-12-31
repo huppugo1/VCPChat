@@ -144,7 +144,8 @@ jobs:
           
           # 更新 Cargo.toml 中 [package] 部分的版本号（只替换第一个）
           if [ "${{ matrix.platform }}" == "windows-latest" ]; then
-            powershell -NoProfile -Command "\$content = Get-Content src-tauri/Cargo.toml -Raw; \$content = \$content -replace '(?m)^version = \"[^\"]*\"', \"version = \`\"\$env:VERSION\`\"\"; Set-Content src-tauri/Cargo.toml -Value \$content -NoNewline"
+            # Windows 使用 PowerShell，需要正确传递变量
+            powershell -NoProfile -Command "\$version = '$VERSION'; \$content = Get-Content src-tauri/Cargo.toml -Raw; \$content = \$content -replace '(?m)^version = \"[^\"]*\"', \"version = \`\"\$version\`\"\"; Set-Content src-tauri/Cargo.toml -Value \$content -NoNewline"
           else
             # 使用 awk 只替换 [package] 部分的第一个 version
             awk -v ver="$VERSION" '
@@ -162,9 +163,9 @@ jobs:
           
           # 更新版本号、产品名称和窗口标题
           if [ "${{ matrix.platform }}" == "windows-latest" ]; then
-            powershell -NoProfile -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"version\": \"[^\"]*\"', '\"version\": \"$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
-            powershell -NoProfile -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"productName\": \"VCP Chat - tauri版v[^\"]*\"', '\"productName\": \"VCP Chat - tauri版v$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
-            powershell -NoProfile -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"title\": \"VCP Chat - tauri版v[^\"]*\"', '\"title\": \"VCP Chat - tauri版v$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
+            powershell -NoProfile -Command "\$version = '$VERSION'; (Get-Content src-tauri/tauri.conf.json) -replace '\"version\": \"[^\"]*\"', ('\"version\": \"' + \$version + '\"') | Set-Content src-tauri/tauri.conf.json"
+            powershell -NoProfile -Command "\$version = '$VERSION'; (Get-Content src-tauri/tauri.conf.json) -replace '\"productName\": \"VCP Chat - tauri版v[^\"]*\"', ('\"productName\": \"VCP Chat - tauri版v' + \$version + '\"') | Set-Content src-tauri/tauri.conf.json"
+            powershell -NoProfile -Command "\$version = '$VERSION'; (Get-Content src-tauri/tauri.conf.json) -replace '\"title\": \"VCP Chat - tauri版v[^\"]*\"', ('\"title\": \"VCP Chat - tauri版v' + \$version + '\"') | Set-Content src-tauri/tauri.conf.json"
           else
             sed -i.bak "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" src-tauri/tauri.conf.json
             sed -i.bak "s/\"productName\": \"VCP Chat - tauri版v[^\"]*\"/\"productName\": \"VCP Chat - tauri版v$VERSION\"/" src-tauri/tauri.conf.json

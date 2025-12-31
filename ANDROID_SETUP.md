@@ -14,12 +14,26 @@
 # 1. 初始化 Android 项目（首次运行）
 npm run android:init
 
-# 2. 开发调试
+# 2. 提交生成的 Android 项目文件到仓库
+git add src-tauri/gen/android
+git commit -m "chore: 初始化 Android 项目"
+git push
+
+# 3. 开发调试
 npm run android:dev
 
-# 3. 构建 APK
+# 4. 构建 APK
 npm run android:build
+
+# 5. 推送 Android 标签触发自动构建
+git tag v0.1.0-android
+git push origin v0.1.0-android
 ```
+
+**重要提示：**
+- Android 项目需要先在本地初始化（`npm run android:init`）
+- 生成的 `src-tauri/gen/android/` 目录需要提交到仓库
+- GitHub Actions 使用 `-android` 后缀的标签触发（例如 `v0.1.0-android`）
 
 ## 1. 环境准备
 
