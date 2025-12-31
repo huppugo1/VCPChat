@@ -46,17 +46,16 @@ jobs:
             请根据您的操作系统选择对应的安装包：
             
             #### Windows
-            - `vcpnewchat_${{ steps.version.outputs.version }}_x64.exe` - 绿色版（推荐）
-            - `vcpnewchat_${{ steps.version.outputs.version }}_x64_setup.exe` - 安装程序
-            - `vcpnewchat_${{ steps.version.outputs.version }}_x64.msi` - MSI 安装包
+            - `vcpnewchat_${{ steps.version.outputs.version }}_x64_portable.exe` - 绿色版（推荐，免安装直接运行）
+            - `VCP Chat - tauri版v${{ steps.version.outputs.version }}_${{ steps.version.outputs.version }}_x64-setup.exe` - 安装程序
             
             #### Linux
-            - `vcpnewchat_${{ steps.version.outputs.version }}_amd64.deb` - Debian/Ubuntu
-            - `vcpnewchat_${{ steps.version.outputs.version }}_amd64.AppImage` - 通用版
+            - `vcp-new-chat_${{ steps.version.outputs.version }}_amd64.deb` - Debian/Ubuntu 系统
+            - `vcp-new-chat_${{ steps.version.outputs.version }}_amd64.AppImage` - 通用版（所有发行版）
             
             #### macOS
-            - `vcpnewchat_${{ steps.version.outputs.version }}_x64.dmg` - Intel 芯片
-            - `vcpnewchat_${{ steps.version.outputs.version }}_aarch64.dmg` - Apple Silicon
+            - `VCP Chat - tauri版v${{ steps.version.outputs.version }}_x64.dmg` - Intel 芯片 Mac
+            - `VCP Chat - tauri版v${{ steps.version.outputs.version }}_aarch64.dmg` - Apple Silicon (M1/M2/M3)
             
             ### ✨ 更新内容
             
@@ -65,8 +64,10 @@ jobs:
             ### 📋 系统要求
             
             - **Windows**: Windows 10 (1809+) 或 Windows 11
+              - 绿色版需要系统已安装 WebView2（Windows 11 自带）
             - **Linux**: 支持 GTK 3.24+ 的发行版
-            - **macOS**: macOS 10.15+
+              - Ubuntu 22.04+, Debian 11+, Fedora 36+, Arch Linux 等
+            - **macOS**: macOS 10.15 (Catalina) 或更高版本
             
             ### 🐛 问题反馈
             
@@ -135,6 +136,48 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm ci
+
+      - name: Update bundle targets for platform
+        shell: bash
+        run: |
+          VERSION="${{ needs.create-release.outputs.release_version }}"
+          
+          # 更新 Cargo.toml 版本号
+          if [ "${{ matrix.platform }}" == "windows-latest" ]; then
+            powershell -Command "(Get-Content src-tauri/Cargo.toml) -replace 'version = \".*\"', 'version = \"$VERSION\"' -replace 'first' | Set-Content src-tauri/Cargo.toml"
+          else
+            sed -i.bak "0,/version = \".*\"/s//version = \"$VERSION\"/" src-tauri/Cargo.toml
+            rm -f src-tauri/Cargo.toml.bak
+          fi
+          
+          # 更新版本号、产品名称和窗口标题
+          if [ "${{ matrix.platform }}" == "windows-latest" ]; then
+            powershell -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"version\": \".*\"', '\"version\": \"$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
+            powershell -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"productName\": \"VCP Chat - tauri版v.*\"', '\"productName\": \"VCP Chat - tauri版v$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
+            powershell -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"title\": \"VCP Chat - tauri版v.*\"', '\"title\": \"VCP Chat - tauri版v$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
+          else
+            sed -i.bak "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" src-tauri/tauri.conf.json
+            sed -i.bak "s/\"productName\": \"VCP Chat - tauri版v.*\"/\"productName\": \"VCP Chat - tauri版v$VERSION\"/" src-tauri/tauri.conf.json
+            sed -i.bak "s/\"title\": \"VCP Chat - tauri版v.*\"/\"title\": \"VCP Chat - tauri版v$VERSION\"/" src-tauri/tauri.conf.json
+            rm -f src-tauri/tauri.conf.json.bak
+          fi
+          
+          # 更新不同平台的打包目标
+          if [ "${{ matrix.platform }}" == "ubuntu-22.04" ]; then
+            # Linux: deb 和 AppImage
+            sed -i.bak 's/"targets": \["nsis"\]/"targets": ["deb", "appimage"]/' src-tauri/tauri.conf.json
+            rm -f src-tauri/tauri.conf.json.bak
+          elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
+            # macOS: dmg 和 app
+            sed -i.bak 's/"targets": \["nsis"\]/"targets": ["dmg", "app"]/' src-tauri/tauri.conf.json
+            rm -f src-tauri/tauri.conf.json.bak
+          fi
+          
+          echo "Updated for ${{ matrix.platform }} with version $VERSION"
+          echo "=== Cargo.toml ==="
+          head -n 10 src-tauri/Cargo.toml
+          echo "=== tauri.conf.json ==="
+          cat src-tauri/tauri.conf.json | grep -E '"version"|"productName"|"title"|"targets"'
 
       - name: Build frontend
         run: npm run build
