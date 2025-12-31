@@ -1,0 +1,115 @@
+name: Android Release Build
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Install Rust Android targets
+        run: |
+          rustup target add aarch64-linux-android
+          rustup target add armv7-linux-androideabi
+          rustup target add i686-linux-android
+          rustup target add x86_64-linux-android
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Get version from tag
+        id: version
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            VERSION="0.0.0-dev"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Update version in mobile config
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          # 更新移动端配置文件的版本号
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" src-tauri/tauri.conf.mobile.json
+          sed -i "s/\"productName\": \"VCP Chat[^\"]*\"/\"productName\": \"VCP Chat v$VERSION\"/" src-tauri/tauri.conf.mobile.json
+          echo "Updated mobile config with version $VERSION"
+
+      - name: Build mobile frontend
+        run: npm run build:mobile
+
+      - name: Copy mobile config
+        run: cp src-tauri/tauri.conf.mobile.json src-tauri/tauri.conf.json
+
+      - name: Build Android APK
+        run: npm run tauri android build -- --apk
+
+      - name: Rename APK files
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          cd src-tauri/gen/android/app/build/outputs/apk
+          
+          # 重命名 universal APK
+          if [ -f "universal/release/app-universal-release-unsigned.apk" ]; then
+            mv universal/release/app-universal-release-unsigned.apk universal/release/vcpnewchat_${VERSION}_universal.apk
+          fi
+          
+          # 重命名 arm64-v8a APK
+          if [ -f "arm64-v8a/release/app-arm64-v8a-release-unsigned.apk" ]; then
+            mv arm64-v8a/release/app-arm64-v8a-release-unsigned.apk arm64-v8a/release/vcpnewchat_${VERSION}_arm64-v8a.apk
+          fi
+          
+          # 重命名 armeabi-v7a APK
+          if [ -f "armeabi-v7a/release/app-armeabi-v7a-release-unsigned.apk" ]; then
+            mv armeabi-v7a/release/app-armeabi-v7a-release-unsigned.apk armeabi-v7a/release/vcpnewchat_${VERSION}_armeabi-v7a.apk
+          fi
+          
+          # 重命名 x86_64 APK
+          if [ -f "x86_64/release/app-x86_64-release-unsigned.apk" ]; then
+            mv x86_64/release/app-x86_64-release-unsigned.apk x86_64/release/vcpnewchat_${VERSION}_x86_64.apk
+          fi
+
+      - name: Upload APK to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          cd src-tauri/gen/android/app/build/outputs/apk
+          
+          # 上传所有架构的 APK
+          for arch in universal arm64-v8a armeabi-v7a x86_64; do
+            if [ -f "$arch/release/vcpnewchat_${VERSION}_${arch}.apk" ]; then
+              gh release upload v${VERSION} "$arch/release/vcpnewchat_${VERSION}_${arch}.apk" --clobber
+              echo "Uploaded $arch APK"
+            fi
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

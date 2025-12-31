@@ -6,11 +6,15 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:mobile": "vite build --mode mobile",
     "preview": "vite preview",
     "tauri": "tauri",
     "build:system": "npm run build && cd src-tauri && copy /Y tauri.conf.system.json tauri.conf.json && cd .. && npm run tauri build",
     "build:embedded": "npm run build && cd src-tauri && copy /Y tauri.conf.embedded.json tauri.conf.json && cd .. && npm run tauri build",
-    "build:both": "npm run build:system && npm run build:embedded"
+    "build:both": "npm run build:system && npm run build:embedded",
+    "android:init": "npm run tauri android init",
+    "android:dev": "cd src-tauri && copy /Y tauri.conf.mobile.json tauri.conf.json && cd .. && npm run tauri android dev",
+    "android:build": "npm run build:mobile && cd src-tauri && copy /Y tauri.conf.mobile.json tauri.conf.json && cd .. && npm run tauri android build"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.9.1",
