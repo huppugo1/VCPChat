@@ -1,0 +1,25 @@
+{
+  "manifestVersion": "1.0.0",
+  "name": "PowerShellExecutor",
+  "version": "1.0.0",
+  "displayName": "PowerShell命令执行器",
+  "description": "一个允许AI执行PowerShell命令并返回其输出的插件。支持阻塞式、后台式以及管理员权限执行。注意：后台式或管理员权限执行会打开一个新的PowerShell窗口，且不会将执行结果直接返回VCP，只会返回任务提交状态。",
+  "author": "Your Name",
+  "pluginType": "hybridservice",
+  "entryPoint": {
+    "type": "nodejs",
+    "script": "PowerShellExecutor.js"
+  },
+  "communication": {
+    "protocol": "direct",
+    "timeout": 600000
+  },
+  "capabilities": {
+    "invocationCommands": [
+      {
+        "commandIdentifier": "PowerShellExecutor",
+        "description": "在一个持久化的PowerShell会话中执行命令。此工具维护一个长期活动的PowerShell窗口，允许连续操作。\n参数:\n- command (字符串, 必需): 要在PowerShell会话中执行的命令。\n- requireAdmin (布尔值, 可选): 如果为 true，将尝试以管理员权限启动一个全新的PowerShell会话。这会向用户显示一个GUI确认对话框。默认为 false。\n- newSession (布尔值, 可选): 如果为 true，将强制关闭当前的PowerShell会话（如果存在）并启动一个全新的会话。这对于重置环境或从错误状态中恢复非常有用。默认为 false。\n- returnMode (字符串, 可选): 控制返回内容的模式。'delta' (默认) 只返回最新命令的输出；'full' 返回整个终端窗口的当前内容。此参数可覆盖在config.env中设置的默认值。\n\n标准调用格式:\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」PowerShellExecutor「末」,\ncommand:「始」cd $env:USERPROFILE/Desktop; ls「末」\n<<<[END_TOOL_REQUEST]>>>\n\n启动新会话并请求管理员权限:\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」PowerShellExecutor「末」,\ncommand:「始」Get-Process -Name 'winlogon'「末」,\nrequireAdmin:「始」true「末」,\nnewSession:「始」true「末」\n<<<[END_TOOL_REQUEST]>>>"
+      }
+    ]
+  }
+}

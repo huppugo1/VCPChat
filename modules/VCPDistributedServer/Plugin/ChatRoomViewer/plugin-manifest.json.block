@@ -1,0 +1,76 @@
+{
+  "manifestVersion": "1.0.0",
+  "name": "ChatRoomViewer",
+  "version": "2.1.0",
+  "displayName": "VCPChat 客户端信息查看器",
+  "description": "提供当前VCPChat客户端的运行状态信息，包括主题设置、界面模式、窗口状态、日志信息、会话监控等实时信息。版本2.1.0增强了时间戳格式化和Agent信息显示功能。",
+  "author": "VCPChat Development Team",
+  "pluginType": "static",
+  "entryPoint": {
+    "command": "node ChatRoomViewer.js"
+  },
+  "communication": {
+    "protocol": "stdio",
+    "timeout": 15000
+  },
+  "capabilities": {
+    "systemPromptPlaceholders": [
+      {
+        "placeholder": "{{VCPChatStatus}}",
+        "description": "当前VCPChat客户端的运行状态和配置信息，包括系统信息、节点信息、用户设置等"
+      },
+      {
+        "placeholder": "{{VCPChatTheme}}",
+        "description": "当前VCPChat使用的主题和界面设置信息，包括主题名称、颜色模式、颜色配置和壁纸信息"
+      },
+      {
+        "placeholder": "{{VCPChatSessionWatcher}}",
+        "description": "当前会话监控信息，包括当前监控的history.json文件路径和监控状态"
+      },
+      {
+        "placeholder": "{{VCPChatAgent}}",
+        "description": "所有VCPChat Agent的基本信息，包括Agent名称、模型配置、头像文件地址等"
+      },
+      {
+        "placeholder": "{{VCPChatModeBubbleTip}}",
+        "description": "主题模式自适应气泡实现指导，教授Agent如何创建亮暗模式自动切换的气泡样式"
+      },
+      {
+        "placeholder": "{{VCPChatSessionTimeElapsed}}",
+        "description": "当前会话时间流逝信息，包括距离上次对话的时间、会话持续时间、集中交流时段分析等"
+      },
+      {
+        "placeholder": "{{VCPChatGroupSessionWatcher}}",
+        "description": "群聊会话监控信息，包括当前监控的群聊会话文件地址和状态"
+      }
+    ],
+    "invocationCommands": []
+  },
+  "refreshIntervalCron": "* * * * * *",
+  "configSchema": {
+    "DebugMode": {
+      "type": "boolean",
+      "description": "是否为此插件启用详细的调试日志输出到stderr。",
+      "default": false,
+      "required": false
+    },
+    "Enabled": {
+      "type": "boolean",
+      "description": "是否启用此ChatRoomViewer插件。如果禁用，插件将不会尝试获取VCPChat状态数据。",
+      "default": true,
+      "required": false
+    },
+    "VCPChatRoot": {
+      "type": "string",
+      "description": "VCPChat客户端的根目录绝对路径。如果不设置，插件将自动检测。",
+      "default": "",
+      "required": false
+    },
+    "TimeZone": {
+      "type": "string",
+      "description": "用于时间戳显示的时区（默认为Asia/Shanghai东八区）。",
+      "default": "Asia/Shanghai",
+      "required": false
+    }
+  }
+}

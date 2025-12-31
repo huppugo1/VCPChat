@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' data:;
+                   script-src 'self' 'unsafe-inline';
+                   style-src 'self' 'unsafe-inline';
+                   img-src * data: file: blob:;
+                   font-src 'self';
+                   connect-src * ws: wss:;">
+    <title>划词助手</title>
+<link rel="stylesheet" href="../styles/themes.css"> <!-- 引用主题样式 -->
+    <link rel="stylesheet" href="../style.css"> <!-- 引用主样式 -->
+    <link rel="stylesheet" href="assistant.css">
+    <link rel="stylesheet" href="../styles/messageRenderer.css"> <!-- 添加对渲染器样式的引用 -->
+    <script src="../vendor/marked.min.js"></script>
+    <script defer src="../vendor/katex.min.js" crossorigin="anonymous"></script>
+    <script defer src="../vendor/auto-render.min.js" crossorigin="anonymous"></script>
+</head>
+<body id="assistant-window-body" class="main-content">
+    <div class="title-bar-assistant">
+        <div class="title-bar-text-assistant">
+            <img id="agentAvatar" src="" alt="Agent" class="avatar">
+            <span id="currentChatAgentName">划词助手</span>
+        </div>
+        <div class="title-bar-controls-assistant">
+            <button id="close-btn-assistant" class="title-bar-button-assistant close-button-assistant" title="关闭">
+                <svg viewBox="0 0 10 10"><polygon points="10,1.01 8.99,0 5,3.99 1.01,0 0,1.01 3.99,5 0,8.99 1.01,10 5,6.01 8.99,10 10,8.99 6.01,5"></polygon></svg>
+            </button>
+        </div>
+    </div>
+    <div class="chat-messages-container">
+        <div class="chat-messages" id="chatMessages">
+            <!-- 聊天消息将在这里动态生成 -->
+        </div>
+    </div>
+    <footer class="chat-input-area">
+        <div class="attachment-preview-area" id="attachmentPreviewArea"></div>
+        <textarea id="messageInput" placeholder="输入消息... (Shift+Enter 换行)" rows="1"></textarea>
+        <button id="sendMessageBtn" title="发送消息 (Ctrl+Enter)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </footer>
+    <script src="../modules/ui-helpers.js"></script> <!-- 添加 ui-helpers -->
+    <script type="module" src="../modules/renderer/colorUtils.js"></script>
+    <script type="module" src="../modules/renderer/imageHandler.js"></script>
+    <script type="module" src="../modules/renderer/domBuilder.js"></script>
+    <script type="module" src="../modules/renderer/streamManager.js"></script>
+    <script type="module" src="../modules/renderer/contentProcessor.js"></script>
+    <script type="module" src="../modules/renderer/messageContextMenu.js"></script>
+    <script type="module" src="../modules/messageRenderer.js"></script>
+    <script src="assistant.js" defer></script>
+</body>
+</html>
+    <script type="module" src="../tauri_compat.js"></script>

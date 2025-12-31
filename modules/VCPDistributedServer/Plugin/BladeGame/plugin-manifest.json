@@ -1,0 +1,30 @@
+{
+  "manifestVersion": "1.0.0",
+  "name": "BladeGame",
+  "displayName": "华山论剑",
+  "description": "一个回合制武侠博弈游戏。你需要管理生命值(HP)和剑气(Energy)与用户对战。",
+  "author": "Ryan & Gemini",
+  "pluginType": "synchronous",
+  "entryPoint": {
+    "type": "python",
+    "command": "python blade_controller.py"
+  },
+  "communication": {
+    "protocol": "stdio",
+    "timeout": 10000
+  },
+  "capabilities": {
+    "invocationCommands": [
+      {
+        "commandIdentifier": "StartGame",
+        "description": "开始一局新的华山论剑游戏。这将打开游戏窗口。\n参数:\n- maid (string, 必需): AI角色的名字（例如：猫娘小克）。\n- difficulty (string, 可选): 难度描述。",
+        "example": "<<<[TOOL_REQUEST]>>>\ntool_name:「始」BladeGame「末」,\ncommand:「始」StartGame「末」,\nmaid:「始」猫娘小克「末」\n<<<[END_TOOL_REQUEST]>>>"
+      },
+      {
+        "commandIdentifier": "PlayTurn",
+        "description": "执行回合动作。注意：必须等待人类用户在GUI上完成输入（User Ready）后，此指令才会生效，否则会返回等待提示。\n参数:\n- action (string, 必需): AI采取的动作。可选值: 'Charge'(蓄势, +1气), 'Slash'(斩击, 0气1伤), 'LightStep'(轻霜踏雪, 1气2伤), 'PlumBlossom'(寒梅逐鹿, 2气4伤+回血), 'Flash'(回光无影, 3气9伤), 'Block'(御剑格挡, -4受击), 'Taiji'(太极两仪, 防御回光无影)。\n- reason (string, 可选): 采取该行动的战术思考。",
+        "example": "<<<[TOOL_REQUEST]>>>\ntool_name:「始」BladeGame「末」,\ncommand:「始」PlayTurn「末」,\naction:「始」Charge「末」,\nreason:「始」我需要积攒剑气来释放大招。「末」\n<<<[END_TOOL_REQUEST]>>>"
+      }
+    ]
+  }
+}

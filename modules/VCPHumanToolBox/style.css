@@ -1,0 +1,996 @@
+/* VCPHumanToolBox/style.css */
+
+html {
+    /* This is the root element, it MUST define the window shape. */
+    border-radius: 12px;
+    overflow: hidden;
+    background: transparent; /* Ensure no color bleeds at the corners. */
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--primary-text);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-color: transparent; /* Let the processed wallpaper show through. */
+}
+
+.title-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50; /* 降低 z-index，确保工作流编辑器在上层 */
+    height: 30px; /* 设置固定高度，避免与工作流编辑器重叠 */
+    background-color: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    color: var(--secondary-text);
+    -webkit-app-region: drag; /* 恢复拖拽功能，但限制在较小区域 */
+    pointer-events: auto; /* 启用事件处理 */
+}
+
+.title-bar > * {
+    pointer-events: auto; /* Re-enable events for children */
+}
+
+.title-bar .title {
+    font-weight: bold;
+}
+
+.window-controls {
+    display: flex;
+    -webkit-app-region: no-drag; /* 控制按钮区域不可拖拽 */
+}
+
+.control-btn {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.control-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#close-btn:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+#theme-toggle-btn {
+    font-size: 16px; /* Adjust emoji size */
+}
+
+.container {
+    height: 100vh;
+    box-sizing: border-box;
+    max-width: 100%; /* 宽度占满 */
+    padding: 20px;
+    padding-top: 50px; /* 40px for title bar + 10px margin */
+    overflow-y: auto; /* 仅在内容超出时显示滚动条 */
+    /* This is the element that gets the blur effect */
+    background-color: var(--panel-bg, rgba(44, 62, 74, 0.75));
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    /*
+     * The container must also be rounded. Although the <html> tag clips the window,
+     * the container's own border and background need to be rounded to match the window shape visually.
+     */
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    border-radius: 12px; /* Match the html element's radius */
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
+}
+
+header h1 {
+    color: var(--highlight-text);
+    margin: 0;
+}
+
+header p {
+    color: var(--secondary-text);
+}
+
+.header-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.workflow-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.workflow-btn:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.workflow-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.workflow-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.tool-card {
+    background-color: rgba(26, 42, 48, 0.5); /* 使用带alpha通道的颜色 */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    border-color: var(--highlight-text);
+}
+
+.tool-card h3 {
+    margin: 0 0 10px 0;
+    color: var(--secondary-text);
+}
+
+.tool-card p {
+    font-size: 14px;
+    color: var(--placeholder-text);
+    margin: 0;
+}
+
+.tool-detail-view {
+    padding: 20px;
+    background-color: var(--tertiary-bg);
+    border-radius: 8px;
+}
+
+.back-btn {
+    background-color: var(--button-bg);
+    color: var(--text-on-accent);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.2s;
+}
+
+.back-btn:hover {
+    background-color: var(--button-hover-bg);
+}
+
+#tool-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#tool-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+#tool-form label {
+    margin-bottom: 5px;
+    color: var(--secondary-text);
+}
+
+#tool-form input,
+#tool-form textarea,
+#tool-form select {
+    background-color: var(--input-bg);
+    color: var(--primary-text);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+#tool-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+#tool-form button {
+    align-self: flex-start;
+    padding: 12px 25px;
+    background-color: var(--success-color);
+    color: var(--text-on-accent);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+#tool-form button:hover {
+    opacity: 0.9;
+}
+
+.result-container {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: var(--input-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    min-height: 100px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.result-container img,
+.result-container video,
+.result-container audio {
+    max-width: 100%;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.result-container .error {
+    color: var(--danger-color);
+}
+
+.result-container .loading {
+    text-align: center;
+    color: var(--secondary-text);
+}
+
+/* --- 加载动画 --- */
+.loader {
+    border: 5px solid var(--border-color);
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- 拖拽排序动画 --- */
+@keyframes dragPulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.4);
+    }
+}
+
+/* 确保 <pre> 标签内的内容也能正确换行 */
+.result-container pre {
+    white-space: pre-wrap;   /* CSS3, 允许换行，同时保留空白符序列 */
+    word-wrap: break-word;   /* 强制长单词或URL换行 */
+}
+
+/* --- Modern Scrollbar Styling --- */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; /* 移除轨道背景 */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--highlight-text); /* 使用主题高亮色 */
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-text);
+}
+
+/* --- Info Box Style --- */
+.info-box {
+    padding: 15px;
+    background-color: rgba(255, 204, 102, 0.1);
+    border-left: 4px solid var(--highlight-text);
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.info-box p {
+    margin: 5px 0;
+    line-height: 1.5;
+}
+
+.info-box strong {
+    color: var(--highlight-text);
+}
+/* --- Tavily Search Results --- */
+.tavily-search-results {
+    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 15px;
+}
+
+.tavily-images-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.tavily-image-wrapper {
+    flex: 1 1 200px; /* Flexbox for responsive sizing */
+    max-width: 250px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--secondary-bg);
+    margin: 0;
+}
+
+.tavily-image-wrapper img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.tavily-image-wrapper figcaption {
+    padding: 8px;
+    font-size: 0.85em;
+    color: var(--secondary-text);
+    text-align: center;
+}
+
+.tavily-results-container .tavily-result-item {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.tavily-results-container .tavily-result-item:last-child {
+    border-bottom: none;
+}
+
+.tavily-result-item h4 {
+    margin: 0 0 5px 0;
+}
+
+.tavily-result-item h4 a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-size: 1.1em;
+}
+
+.tavily-result-item h4 a:hover {
+    text-decoration: underline;
+}
+
+.tavily-result-url {
+    font-size: 0.9em;
+    color: var(--accent-color);
+    margin: 0 0 8px 0;
+    word-break: break-all;
+}
+
+.tavily-result-snippet {
+    font-size: 1em;
+    color: var(--primary-text);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* --- Workflow Editor UI Fixes --- */
+
+/* Sidebar Search Box Fix */
+.workflow-sidebar .sidebar-search {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Canvas Controls Button Fix */
+.zoom-controls .zoom-btn {
+    min-width: auto; /* Reset min-width */
+    padding: 6px 12px; /* Adjust padding */
+}
+
+#zoomInBtn, #zoomOutBtn {
+    width: 36px; /* Fixed width for +/- buttons */
+}
+
+#zoomFitBtn {
+    min-width: 50px; /* Ensure enough width for "适应" */
+}
+
+
+/* Canvas Node Remove Button */
+.canvas-node-header {
+    position: relative !important; /* Ensure positioning context */
+}
+
+.canvas-node-remove-btn {
+    position: absolute;
+    top: -17px;  
+    right: -17px; 
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #ef4444;
+    color: #fff;
+    border: 2px solid #1e293b; /* Add a border to match the background */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+    z-index: 10; /* Ensure the button is on top of other elements */
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.canvas-node:hover .canvas-node-remove-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.canvas-node-remove-btn:hover {
+    transform: scale(1.15);
+}
+
+/* --- Drag & Drop Image Upload Styles --- */
+.dragdrop-image-container {
+    --primary-color: #3b82f6;
+    --primary-color-alpha: rgba(59, 130, 246, 0.1);
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+}
+
+.dragdrop-image-container:hover {
+    border-color: var(--primary-color);
+}
+
+.dragdrop-image-container.drag-over {
+    border-color: var(--primary-color) !important;
+    background: var(--primary-color-alpha) !important;
+}
+
+.drop-zone {
+    user-select: none;
+}
+
+.drop-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+/* --- Dynamic Images Container Styles --- */
+.dynamic-images-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dynamic-images-header h4 {
+    margin: 0;
+    color: var(--secondary-text);
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.add-image-btn:hover {
+    background: #2563eb !important;
+    transform: translateY(-1px);
+}
+
+.clear-all-images-btn {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.clear-all-images-btn:hover {
+    background: #dc2626 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.dynamic-image-item {
+    transition: all 0.3s ease;
+}
+
+.dynamic-image-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dynamic-image-item.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+
+.drag-handle:hover {
+    color: var(--primary-color) !important;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 4px;
+}
+
+.remove-image-btn:hover {
+    background: #dc2626 !important;
+    transform: scale(1.05);
+}
+
+.sortable-images-list {
+    min-height: 50px;
+    border: 1px dashed var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.sortable-images-list:empty::after {
+    content: '暂无额外图片，点击“添加图片”按钮添加';
+    display: block;
+    text-align: center;
+    color: var(--secondary-text);
+    font-style: italic;
+    padding: 20px;
+}
+
+/* --- Image Preview and Clear Button Styles --- */
+.image-preview-area img {
+    border: 1px solid var(--border-color);
+}
+
+.clear-image-btn:hover {
+    background: #dc2626 !important;
+    transform: scale(1.05);
+}
+
+.clear-image-btn {
+    display: block !important;
+}
+
+.file-name {
+    font-family: monospace;
+}
+
+/* --- Image Preview Center Alignment --- */
+.image-preview-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* --- Translation Quality and Language Selects --- */
+.translation-quality-select,
+.translation-language-select {
+    transition: all 0.2s ease;
+}
+
+.translation-quality-select:hover,
+.translation-language-select:hover {
+    border-color: var(--primary-color);
+}
+
+.translation-quality-select:focus,
+.translation-language-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* --- Translation UI Styles --- */
+.checkbox-group {
+    margin-bottom: 10px;
+}
+
+.checkbox-label {
+    font-size: 14px;
+    color: var(--secondary-text);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary-color);
+}
+
+.translation-container {
+    --primary-color: #3b82f6;
+    --secondary-color: #6b7280;
+    --warning-color: #f59e0b;
+}
+
+.translated-prompt {
+    font-family: inherit;
+}
+
+.translation-container button {
+    transition: all 0.2s ease;
+}
+
+.translation-container button:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+.translation-container button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* --- Clear All Button Styles --- */
+.clear-all-btn {
+    --warning-color: #f59e0b;
+    transition: all 0.2s ease;
+}
+
+.clear-all-btn:hover {
+    background-color: #d97706 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.clear-all-btn:active {
+    transform: translateY(0);
+}
+
+/* --- Success Notification Styles --- */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.success-notification {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.success-notification.removing {
+    animation: slideOutRight 0.3s ease-in;
+}
+
+/* --- Settings Button Styles --- */
+.settings-btn {
+    transition: all 0.2s ease;
+}
+
+.settings-btn:hover {
+    background: rgba(59, 130, 246, 1) !important;
+    transform: scale(1.05);
+}
+
+/* --- Drag Indicator Styles --- */
+.drag-indicator {
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+/* --- Empty Drop Hint Styles --- */
+.empty-drop-hint {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* --- Drag Handle Enhanced Styles --- */
+.drag-handle {
+    transition: all 0.2s ease;
+    border-radius: 4px;
+}
+
+.drag-handle:hover {
+    color: var(--primary-color) !important;
+    background: rgba(59, 130, 246, 0.1) !important;
+    transform: scale(1.1);
+}
+
+/* --- Enhanced Drag Visual Effects --- */
+@keyframes dragPulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.4);
+    }
+}
+
+.drag-target-hover {
+    background: rgba(59, 130, 246, 0.1) !important;
+    border: 2px solid rgba(59, 130, 246, 0.5) !important;
+    border-radius: 8px !important;
+    transform: scale(1.01) !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
+}
+
+.dynamic-image-item.dragging {
+    transition: none !important;
+    cursor: grabbing !important;
+}
+
+.dynamic-image-item {
+    transition: all 0.2s ease;
+}
+
+/* --- Drag Indicator Enhanced Animation --- */
+.drag-indicator {
+    animation: dragPulse 1.5s ease-in-out infinite;
+}
+
+/* --- 成功/信息通知样式 --- */
+.success-notification,
+.info-notification {
+    animation: slideInNotification 0.3s ease-out;
+}
+
+.success-notification.removing,
+.info-notification.removing {
+    animation: slideOutNotification 0.3s ease-in;
+}
+
+@keyframes slideInNotification {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutNotification {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* --- 画板编辑器样式 --- */
+.canvas-editor-modal {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.canvas-editor-modal.show {
+    opacity: 1 !important;
+}
+
+.canvas-editor-container {
+    animation: modalSlideIn 0.3s ease-out;
+    max-width: 95vw;
+    max-height: 95vh;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.canvas-toolbar {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.canvas-toolbar select,
+.canvas-toolbar input[type="range"] {
+    transition: all 0.2s ease;
+}
+
+.canvas-toolbar select:hover,
+.canvas-toolbar select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.canvas-toolbar input[type="color"] {
+    transition: all 0.2s ease;
+}
+
+.canvas-toolbar input[type="color"]:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.canvas-toolbar input[type="range"]:hover {
+    cursor: pointer;
+}
+
+.canvas-toolbar input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+    transition: all 0.2s ease;
+}
+
+.canvas-toolbar input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
+}
+
+.canvas-toolbar input[type="range"]::-webkit-slider-track {
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border-color);
+}
+
+.save-btn:hover,
+.copy-btn:hover,
+.undo-btn:hover,
+.clear-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.save-btn:active,
+.copy-btn:active,
+.undo-btn:active,
+.clear-btn:active {
+    transform: translateY(0);
+}
+
+/* --- 文字输入框样式 --- */
+.canvas-text-input {
+    font-family: Arial, sans-serif;
+    line-height: 1.2;
+}
+
+.canvas-text-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* --- 清空选项菜单样式 --- */
+.clear-options-menu {
+    animation: menuFadeIn 0.2s ease-out;
+}
+
+@keyframes menuFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* --- 画板按钮样式 --- */
+.blank-canvas-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4) !important;
+}
+
+.edit-canvas-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(240, 147, 251, 0.4) !important;
+}
+
+.paste-clipboard-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(74, 222, 128, 0.4) !important;
+}
+
+.blank-canvas-btn:active,
+.edit-canvas-btn:active,
+.paste-clipboard-btn:active {
+    transform: translateY(0);
+}
+
+.canvas-buttons-container {
+    transition: all 0.3s ease;
+}
+
+/* --- 画板通知动画 --- */
+@keyframes canvasNotificationShow {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes canvasNotificationHide {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}

@@ -1,0 +1,21 @@
+{
+  "manifestVersion": "1.0.0",
+  "name": "DistImageServer",
+  "displayName": "分布式图床服务器",
+  "version": "1.0.0",
+  "description": "在分布式服务器上托管一个本地目录，使其可以通过HTTP访问。",
+  "author": "Kilo Code",
+  "pluginType": "service",
+  "entryPoint": {
+    "type": "nodejs",
+    "script": "image-server.js"
+  },
+  "communication": {
+    "protocol": "direct"
+  },
+  "configSchema": {
+    "DIST_IMAGE_KEY": "string",
+    "DIST_IMAGE_PATH": "string",
+    "DebugMode": "boolean"
+  }
+}

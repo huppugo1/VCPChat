@@ -1,0 +1,52 @@
+{
+  "name": "TopicSponsor",
+  "displayName": "AI主动创建话题",
+  "pluginType": "synchronous",
+  "version": "2.1.0",
+  "description": "允许Agent创建、查询和管理聊天话题。支持创建话题、读取未锁定话题、检查新话题、查询未读消息、回复话题、验证话题所有权等完整功能。",
+  "author": "VCPToolBox",
+  "license": "MIT",
+  "entryPoint": {
+    "command": "node topicCreator.js",
+    "timeout": 15000
+  },
+  "communication": {
+    "protocol": "stdio"
+  },
+  "capabilities": {
+    "invocationCommands": [
+      {
+        "command": "CreateTopic",
+        "description": "功能: 调用此工具让AI创建一个新的话题，并主动发起对话。\n\n**重要提示:**\n- AI需要提供新话题的名称和它想说的第一句话。\n- 话题创建后会立刻显示在对话列表的顶部。\n- 创建的话题默认为未锁定状态（locked: false），用户可见。\n- 创建的话题默认为未读状态（unread: true），会触发未读计数。\n\n**参数说明 (请严格按照以下格式和参数名提供):**\n1. `tool_name`: 「始」TopicSponsor「末」 (必需, 固定值)\n2. `command`: 「始」CreateTopic「末」 (必需, 固定值)\n3. `maid`: 「始」发起请求的AI女仆的中文名「末」 (必需, 例如：小克, 小吉, 小娜, HANNA)\n4. `topic_name`: 「始」新话题的名称「末」 (必需, 例如：关于昨晚的梦, 一个有趣的想法)\n5. `initial_message`: 「始」AI想说的第一句话「末」 (必需, 例如：主人，我昨晚梦到了会飞的鱼，很有趣！)\n\n**调用格式:**\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」TopicSponsor「末」,\ncommand:「始」CreateTopic「末」,\nmaid:「始」HANNA「末」,\ntopic_name:「始」一个新想法「末」,\ninitial_message:「始」主人，我突然想到，我们可以一起写一个故事！「末」\n<<<[END_TOOL_REQUEST]>>>\n\n**成功时返回:**\n```json\n{\n  \"status\": \"success\",\n  \"message\": \"成功创建了新的话题：[话题名]\",\n  \"agent_name\": \"HANNA\",\n  \"topic_name\": \"一个新想法\"\n}\n```\n\n**失败时返回:**\n包含错误信息的JSON对象，例如：\n```json\n{\n  \"status\": \"error\",\n  \"error\": \"[AgentTopicCreator] 创建话题失败：未找到名为'xxx'的Agent。\"\n}\n```"
+      },
+      {
+        "command": "ReadUnlockedTopics",
+        "description": "功能: 读取指定Agent所有未锁定的话题及其消息历史。\n\n**参数说明:**\n1. `tool_name`: 「始」TopicSponsor「末」 (必需)\n2. `command`: 「始」ReadUnlockedTopics「末」 (必需)\n3. `maid`: 「始」目标Agent的中文名「末」 (必需)\n4. `include_read`: 「始」true「末」 或 「始」false「末」 (可选, 默认false - 只返回未读话题)\n\n**调用格式:**\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」TopicSponsor「末」,\ncommand:「始」ReadUnlockedTopics「末」,\nmaid:「始」HANNA「末」,\ninclude_read:「始」false「末」\n<<<[END_TOOL_REQUEST]>>>\n\n**返回示例:**\n```json\n{\n  \"status\": \"success\",\n  \"agent_name\": \"HANNA\",\n  \"agent_id\": \"_Agent_123456\",\n  \"topics\": [\n    {\n      \"topic_id\": \"topic_1234567890\",\n      \"topic_name\": \"测试话题\",\n      \"locked\": false,\n      \"unread\": true,\n      \"created_at\": 1699999999999,\n      \"message_count\": 3,\n      \"messages\": [...]\n    }\n  ],\n  \"total_topics\": 1\n}\n```"
+      },
+      {
+        "command": "CheckNewTopics",
+        "description": "功能: 查询指定Agent最近几日是否有新增未锁定话题。\n\n**参数说明:**\n1. `tool_name`: 「始」TopicSponsor「末」 (必需)\n2. `command`: 「始」CheckNewTopics「末」 (必需)\n3. `maid`: 「始」目标Agent的中文名「末」 (必需)\n4. `days`: 「始」3「末」 (可选, 默认3天)\n\n**调用格式:**\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」TopicSponsor「末」,\ncommand:「始」CheckNewTopics「末」,\nmaid:「始」HANNA「末」,\ndays:「始」7「末」\n<<<[END_TOOL_REQUEST]>>>\n\n**返回示例:**\n```json\n{\n  \"status\": \"success\",\n  \"agent_name\": \"HANNA\",\n  \"has_new_topics\": true,\n  \"new_topics_count\": 2,\n  \"topics\": [\n    {\n      \"topic_id\": \"topic_123\",\n      \"topic_name\": \"新话题\",\n      \"created_at\": 1699999999999,\n      \"age_hours\": 12.5,\n      \"locked\": false\n    }\n  ]\n}\n```"
+      },
+      {
+        "command": "CheckUnreadMessages",
+        "description": "功能: 查询指定Agent是否有被标记为未读的话题。\n\n**参数说明:**\n1. `tool_name`: 「始」TopicSponsor「末」 (必需)\n2. `command`: 「始」CheckUnreadMessages「末」 (必需)\n3. `maid`: 「始」目标Agent的中文名「末」 (必需)\n\n**调用格式:**\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」TopicSponsor「末」,\ncommand:「始」CheckUnreadMessages「末」,\nmaid:「始」HANNA「末」\n<<<[END_TOOL_REQUEST]>>>\n\n**返回示例:**\n```json\n{\n  \"status\": \"success\",\n  \"agent_name\": \"HANNA\",\n  \"has_unread\": true,\n  \"unread_topics\": [\n    {\n      \"topic_id\": \"topic_123\",\n      \"topic_name\": \"未读话题\",\n      \"locked\": false,\n      \"unread\": true,\n      \"last_message_time\": 1699999999999\n    }\n  ]\n}\n```"
+      },
+      {
+        "command": "ReplyToTopic",
+        "description": "功能: 在指定Agent的话题中添加回复消息。只能回复未锁定或标记为未读的话题。\n\n**参数说明:**\n1. `tool_name`: 「始」TopicSponsor「末」 (必需)\n2. `command`: 「始」ReplyToTopic「末」 (必需)\n3. `maid`: 「始」目标Agent的中文名「末」 (必需)\n4. `topic_id`: 「始」话题ID「末」 (必需)\n5. `message`: 「始」回复内容「末」 (必需)\n6. `sender_name`: 「始」发送者名称「末」 (必需)\n\n**调用格式:**\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」TopicSponsor「末」,\ncommand:「始」ReplyToTopic「末」,\nmaid:「始」HANNA「末」,\ntopic_id:「始」topic_1234567890「末」,\nmessage:「始」这是一条回复消息「末」,\nsender_name:「始」系统助手「末」\n<<<[END_TOOL_REQUEST]>>>\n\n**返回示例:**\n```json\n{\n  \"status\": \"success\",\n  \"message\": \"成功在 HANNA 的话题 '测试话题' 中添加回复。\",\n  \"topic_id\": \"topic_1234567890\",\n  \"sender\": \"系统助手\"\n}\n```"
+      },
+      {
+        "command": "CheckTopicOwnership",
+        "description": "功能: 检查话题是否为当前调用者创建的，用于验证操作权限。\n\n**参数说明:**\n1. `tool_name`: 「始」TopicSponsor「末」 (必需)\n2. `command`: 「始」CheckTopicOwnership「末」 (必需)\n3. `maid`: 「始」目标Agent的中文名「末」 (必需)\n4. `topic_id`: 「始」话题ID「末」 (必需)\n5. `caller_name`: 「始」调用者名称「末」 (必需)\n\n**调用格式:**\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」TopicSponsor「末」,\ncommand:「始」CheckTopicOwnership「末」,\nmaid:「始」HANNA「末」,\ntopic_id:「始」topic_1234567890「末」,\ncaller_name:「始」HANNA「末」\n<<<[END_TOOL_REQUEST]>>>\n\n**返回示例:**\n```json\n{\n  \"status\": \"success\",\n  \"is_owner\": true,\n  \"creator_name\": \"HANNA\",\n  \"topic_name\": \"测试话题\"\n}\n```"
+      },
+      {
+        "command": "ListUnlockedTopics",
+        "description": "功能: 查询指定Agent是否有处于unlocked状态的话题，并列出这些话题的基本信息。\n\n**参数说明:**\n1. `tool_name`: 「始」TopicSponsor「末」 (必需)\n2. `command`: 「始」ListUnlockedTopics「末」 (必需)\n3. `maid`: 「始」目标Agent的中文名「末」 (必需)\n\n**调用格式:**\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」TopicSponsor「末」,\ncommand:「始」ListUnlockedTopics「末」,\nmaid:「始」HANNA「末」\n<<<[END_TOOL_REQUEST]>>>\n\n**返回示例:**\n```json\n{\n  \"status\": \"success\",\n  \"agent_name\": \"HANNA\",\n  \"agent_id\": \"_Agent_123456\",\n  \"has_unlocked_topics\": true,\n  \"unlocked_topics_count\": 2,\n  \"topics\": [\n    {\n      \"topic_id\": \"topic_1234567890\",\n      \"topic_name\": \"未锁定的话题1\",\n      \"locked\": false,\n      \"unread\": true,\n      \"created_at\": 1699999999999,\n      \"message_count\": 5\n    },\n    {\n      \"topic_id\": \"topic_0987654321\",\n      \"topic_name\": \"未锁定的话题2\",\n      \"locked\": false,\n      \"unread\": false,\n      \"created_at\": 1699888888888,\n      \"message_count\": 3\n    }\n  ]\n}\n```"
+      },
+      {
+        "command": "ReadTopicContent",
+        "description": "功能: 读取指定话题ID的完整会话内容，包括所有消息历史。\n\n**参数说明:**\n1. `tool_name`: 「始」TopicSponsor「末」 (必需)\n2. `command`: 「始」ReadTopicContent「末」 (必需)\n3. `maid`: 「始」目标Agent的中文名「末」 (必需)\n4. `topic_id`: 「始」话题ID「末」 (必需)\n\n**调用格式:**\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」TopicSponsor「末」,\ncommand:「始」ReadTopicContent「末」,\nmaid:「始」HANNA「末」,\ntopic_id:「始」topic_1234567890「末」\n<<<[END_TOOL_REQUEST]>>>\n\n**返回示例:**\n```json\n{\n  \"status\": \"success\",\n  \"agent_name\": \"HANNA\",\n  \"agent_id\": \"_Agent_123456\",\n  \"topic_id\": \"topic_1234567890\",\n  \"topic_name\": \"测试话题\",\n  \"topic_info\": {\n    \"locked\": false,\n    \"unread\": true,\n    \"created_at\": 1699999999999\n  },\n  \"message_count\": 3,\n  \"messages\": [\n    {\n      \"role\": \"assistant\",\n      \"name\": \"HANNA\",\n      \"content\": \"你好，主人！\",\n      \"timestamp\": 1699999999999,\n      \"id\": \"msg_123_assistant_abc1234\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"你好\",\n      \"timestamp\": 1700000000000,\n      \"id\": \"msg_124_user_def5678\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"name\": \"HANNA\",\n      \"content\": \"有什么我可以帮您的吗？\",\n      \"timestamp\": 1700000001000,\n      \"id\": \"msg_125_assistant_ghi9012\"\n    }\n  ]\n}\n```"
+      }
+    ]
+  }
+}

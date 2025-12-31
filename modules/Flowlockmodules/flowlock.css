@@ -1,0 +1,200 @@
+/* Flowlockmodules/flowlock.css */
+/* 心流锁模块样式 - 实现发光效果 */
+
+/* 心流锁激活时的发光动画和文字波动 */
+#currentChatAgentName.flowlock-active {
+    position: relative;
+    animation: flowlock-glow 2s ease-in-out infinite, flowlock-text-wave 3s ease-in-out infinite;
+    /* 保持颜色不变回原始 */
+    color: inherit !important;
+}
+
+/* 发光动画关键帧 */
+@keyframes flowlock-glow {
+    0%, 100% {
+        text-shadow: 
+            0 0 5px var(--accent-color),
+            0 0 10px var(--accent-color),
+            0 0 15px var(--accent-color),
+            0 0 20px var(--accent-color);
+        filter: brightness(1.2);
+    }
+    50% {
+        text-shadow: 
+            0 0 10px var(--accent-color),
+            0 0 20px var(--accent-color),
+            0 0 30px var(--accent-color),
+            0 0 40px var(--accent-color);
+        filter: brightness(1.5);
+    }
+}
+
+/* 文字正弦波动动画 - 轻微但可见，带随机旋转 */
+/* 注意：实际旋转方向将通过JavaScript动态设置CSS变量 */
+@keyframes flowlock-text-wave {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-1.5px) rotate(calc(var(--flowlock-rotate-direction, 1) * 1deg));
+    }
+    50% {
+        transform: translateY(0px) rotate(calc(var(--flowlock-rotate-direction, 1) * 2deg));
+    }
+    75% {
+        transform: translateY(1.5px) rotate(calc(var(--flowlock-rotate-direction, 1) * 1deg));
+    }
+}
+
+/* 心跳膨胀收缩动画 - 在续写开始时触发，带随机旋转 */
+@keyframes flowlock-heartbeat {
+    0% {
+        transform: scale(1) translateY(0) rotate(0deg);
+    }
+    14% {
+        transform: scale(1.08) translateY(0) rotate(calc(var(--flowlock-heartbeat-rotate, 1) * 2deg));
+    }
+    28% {
+        transform: scale(1) translateY(0) rotate(0deg);
+    }
+    42% {
+        transform: scale(1.08) translateY(0) rotate(calc(var(--flowlock-heartbeat-rotate, 1) * 2deg));
+    }
+    70% {
+        transform: scale(1) translateY(0) rotate(0deg);
+    }
+}
+
+/* 心跳效果类 - 通过JS动态添加/移除，保持颜色 */
+#currentChatAgentName.flowlock-heartbeat {
+    animation: flowlock-heartbeat 0.8s ease-in-out !important;
+    /* 膨胀时保持颜色不变 */
+    color: inherit !important;
+}
+
+/* 为心流锁激活状态添加底色发光效果 */
+#currentChatAgentName.flowlock-active::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -10px;
+    right: -10px;
+    bottom: -5px;
+    background: linear-gradient(
+        135deg,
+        rgba(var(--accent-color-rgb), 0.1),
+        rgba(var(--accent-color-rgb), 0.2),
+        rgba(var(--accent-color-rgb), 0.1)
+    );
+    border-radius: 8px;
+    z-index: -1;
+    animation: flowlock-bg-pulse 2s ease-in-out infinite;
+}
+
+/* 背景脉冲动画 */
+@keyframes flowlock-bg-pulse {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
+/* 深色主题下的优化 - 保持发光颜色 */
+.dark-theme #currentChatAgentName.flowlock-active {
+    color: var(--highlight-text) !important;
+}
+
+/* 浅色主题下的优化 - 保持发光颜色 */
+.light-theme #currentChatAgentName.flowlock-active {
+    color: var(--accent-color) !important;
+}
+
+/* 确保心跳动画时颜色也保持 */
+.dark-theme #currentChatAgentName.flowlock-heartbeat {
+    color: var(--highlight-text) !important;
+}
+
+.light-theme #currentChatAgentName.flowlock-heartbeat {
+    color: var(--accent-color) !important;
+}
+
+/* 心流锁状态指示器（可选） */
+.flowlock-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    margin-left: 8px;
+    animation: flowlock-indicator-blink 1s ease-in-out infinite;
+    vertical-align: middle;
+}
+
+@keyframes flowlock-indicator-blink {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 5px var(--accent-color);
+    }
+    50% {
+        opacity: 0.3;
+        box-shadow: 0 0 10px var(--accent-color);
+    }
+}
+
+/* 确保定位上下文正确 */
+#currentChatAgentName {
+    position: relative;
+    z-index: 1;
+}
+
+/* 播放emoji样式 - 独立随机运动 */
+.flowlock-playing-emoji {
+    display: inline-block;
+    position: relative;
+    /* 使用CSS变量控制随机运动参数 */
+    animation:
+        flowlock-emoji-float var(--emoji-float-duration, 3s) ease-in-out infinite,
+        flowlock-emoji-pulse 1.5s ease-in-out infinite;
+}
+
+/* emoji漂浮运动 - 随机8字形路径 */
+@keyframes flowlock-emoji-float {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    25% {
+        transform: translate(
+            calc(var(--emoji-move-x1, 3) * 1px),
+            calc(var(--emoji-move-y1, -2) * 1px)
+        ) rotate(calc(var(--emoji-rotate1, 5) * 1deg)) scale(1.05);
+    }
+    50% {
+        transform: translate(
+            calc(var(--emoji-move-x2, -2) * 1px),
+            calc(var(--emoji-move-y2, 3) * 1px)
+        ) rotate(calc(var(--emoji-rotate2, -5) * 1deg)) scale(0.95);
+    }
+    75% {
+        transform: translate(
+            calc(var(--emoji-move-x3, 2) * 1px),
+            calc(var(--emoji-move-y3, 2) * 1px)
+        ) rotate(calc(var(--emoji-rotate3, 3) * 1deg)) scale(1.05);
+    }
+    100% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+}
+
+/* emoji脉冲动画 */
+@keyframes flowlock-emoji-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}

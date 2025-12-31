@@ -1,0 +1,31 @@
+{
+  "manifestVersion": "1.0.0",
+  "name": "TableLampRemote",
+  "version": "1.0.0",
+  "displayName": "米家台灯遥控器",
+  "description": "一个通过 mijiaAPI 控制米家台灯的插件。",
+  "author": "Kilo Code",
+  "pluginType": "synchronous",
+  "entryPoint": {
+    "type": "python",
+    "command": "python main.py"
+  },
+  "communication": {
+    "protocol": "stdio",
+    "timeout": 15000
+  },
+  "capabilities": {
+    "invocationCommands": [
+      {
+        "commandIdentifier": "GetLampStatus",
+        "description": "获取米家台灯Pro的状态，将一次性返回开关状态、亮度、色温三个信息。\n调用格式:\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」TableLampRemote「末」,\ncommand:「始」GetLampStatus「末」\n<<<[END_TOOL_REQUEST]>>>",
+        "example": "<<<[TOOL_REQUEST]>>>\ntool_name:「始」TableLampRemote「末」,\ncommand:「始」GetLampStatus「末」\n<<<[END_TOOL_REQUEST]>>>"
+      },
+      {
+        "commandIdentifier": "LampControl",
+        "description": "控制米家台灯Pro。你可以一次性设置一个或多个属性。所有参数均为可选。\n参数:\n- power (字符串): 控制开关。设为 'True' 打开，'False' 关闭。\n- brightness (整数): 设置亮度，范围是 1 到 100。\n- color_temperature (整数): 设置色温，范围是 2500 到 4800。\n\n单项控制示例:\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」TableLampRemote「末」,\ncommand:「始」LampControl「末」,\nbrightness:「始」80「末」\n<<<[END_TOOL_REQUEST]>>>\n\n多项控制（批处理）示例:\n<<<[TOOL_REQUEST]>>>\ntool_name:「始」TableLampRemote「末」,\ncommand:「始」LampControl「末」,\npower:「始」True「末」,\nbrightness:「始」100「末」,\ncolor_temperature:「始」4000「末」\n<<<[END_TOOL_REQUEST]>>>",
+        "example": "<<<[TOOL_REQUEST]>>>\ntool_name:「始」TableLampRemote「末」,\ncommand:「始」LampControl「末」,\npower:「始」True「末」,\nbrightness:「始」100「末」\n<<<[END_TOOL_REQUEST]>>>"
+      }
+    ]
+  }
+}
