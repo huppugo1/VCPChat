@@ -9,7 +9,7 @@ AppData
 # 日志文件
 *.log
 logs/
-
+git说明.txt
 # 环境变量文件
 .env
 .env.local

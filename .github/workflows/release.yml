@@ -128,23 +128,13 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
-      - name: Update version in tauri.conf.json
-        shell: bash
-        run: |
-          VERSION="${{ needs.create-release.outputs.release_version }}"
-          # 更新 tauri.conf.json 中的版本号
-          if [ -f "src-tauri/tauri.conf.json" ]; then
-            sed -i.bak "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" src-tauri/tauri.conf.json
-            sed -i.bak "s/\"productName\": \".*\"/\"productName\": \"VCP Chat - tauri版v$VERSION\"/" src-tauri/tauri.conf.json
-            rm src-tauri/tauri.conf.json.bak
-          fi
+      - name: Build frontend
+        run: npm run build
 
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: --target ${{ matrix.target }}
