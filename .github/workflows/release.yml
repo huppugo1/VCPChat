@@ -36,7 +36,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
           release_name: VCP New Chat v${{ steps.version.outputs.version }}
           body: |
             ## VCP New Chat v${{ steps.version.outputs.version }}
