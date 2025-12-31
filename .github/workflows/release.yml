@@ -142,23 +142,33 @@ jobs:
         run: |
           VERSION="${{ needs.create-release.outputs.release_version }}"
           
-          # 更新 Cargo.toml 版本号
+          # 更新 Cargo.toml 中 [package] 部分的版本号（只替换第一个）
           if [ "${{ matrix.platform }}" == "windows-latest" ]; then
-            powershell -Command "(Get-Content src-tauri/Cargo.toml) -replace 'version = \".*\"', 'version = \"$VERSION\"' -replace 'first' | Set-Content src-tauri/Cargo.toml"
+            powershell -Command "\$content = Get-Content src-tauri/Cargo.toml -Raw; \$content = \$content -replace '(?m)^version = \"[^\"]*\"', \"version = \`\"\$env:VERSION\`\"\" -replace 'first'; Set-Content src-tauri/Cargo.toml -Value \$content -NoNewline" -NoProfile
           else
-            sed -i.bak "0,/version = \".*\"/s//version = \"$VERSION\"/" src-tauri/Cargo.toml
-            rm -f src-tauri/Cargo.toml.bak
+            # 使用 awk 只替换 [package] 部分的第一个 version
+            awk -v ver="$VERSION" '
+              /^\[package\]/ { in_package=1 }
+              /^\[/ && !/^\[package\]/ { in_package=0 }
+              in_package && /^version = / && !replaced { 
+                print "version = \"" ver "\""
+                replaced=1
+                next
+              }
+              { print }
+            ' src-tauri/Cargo.toml > src-tauri/Cargo.toml.tmp
+            mv src-tauri/Cargo.toml.tmp src-tauri/Cargo.toml
           fi
           
           # 更新版本号、产品名称和窗口标题
           if [ "${{ matrix.platform }}" == "windows-latest" ]; then
-            powershell -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"version\": \".*\"', '\"version\": \"$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
-            powershell -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"productName\": \"VCP Chat - tauri版v.*\"', '\"productName\": \"VCP Chat - tauri版v$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
-            powershell -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"title\": \"VCP Chat - tauri版v.*\"', '\"title\": \"VCP Chat - tauri版v$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
+            powershell -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"version\": \"[^\"]*\"', '\"version\": \"$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
+            powershell -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"productName\": \"VCP Chat - tauri版v[^\"]*\"', '\"productName\": \"VCP Chat - tauri版v$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
+            powershell -Command "(Get-Content src-tauri/tauri.conf.json) -replace '\"title\": \"VCP Chat - tauri版v[^\"]*\"', '\"title\": \"VCP Chat - tauri版v$VERSION\"' | Set-Content src-tauri/tauri.conf.json"
           else
-            sed -i.bak "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" src-tauri/tauri.conf.json
-            sed -i.bak "s/\"productName\": \"VCP Chat - tauri版v.*\"/\"productName\": \"VCP Chat - tauri版v$VERSION\"/" src-tauri/tauri.conf.json
-            sed -i.bak "s/\"title\": \"VCP Chat - tauri版v.*\"/\"title\": \"VCP Chat - tauri版v$VERSION\"/" src-tauri/tauri.conf.json
+            sed -i.bak "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" src-tauri/tauri.conf.json
+            sed -i.bak "s/\"productName\": \"VCP Chat - tauri版v[^\"]*\"/\"productName\": \"VCP Chat - tauri版v$VERSION\"/" src-tauri/tauri.conf.json
+            sed -i.bak "s/\"title\": \"VCP Chat - tauri版v[^\"]*\"/\"title\": \"VCP Chat - tauri版v$VERSION\"/" src-tauri/tauri.conf.json
             rm -f src-tauri/tauri.conf.json.bak
           fi
           
@@ -174,8 +184,8 @@ jobs:
           fi
           
           echo "Updated for ${{ matrix.platform }} with version $VERSION"
-          echo "=== Cargo.toml ==="
-          head -n 10 src-tauri/Cargo.toml
+          echo "=== Cargo.toml (first 20 lines) ==="
+          head -n 20 src-tauri/Cargo.toml
           echo "=== tauri.conf.json ==="
           cat src-tauri/tauri.conf.json | grep -E '"version"|"productName"|"title"|"targets"'
 
