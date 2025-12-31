@@ -5,6 +5,7 @@
 /build
 /out
 AppData
+node_modules
 
 # 日志文件
 *.log
