@@ -1,0 +1,86 @@
+/* styles/attachment.css */
+
+.attachment-preview-area {
+  display: none; /* 默认隐藏，有附件时显示 */
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  background-color: var(--bg-light);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.attachment-preview-area:not(:empty) {
+  display: flex; /* 有内容时显示为 flex */
+}
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  background-color: var(--panel-bg-dark);
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+body.light-theme .file-item {
+  background-color: var(--panel-bg-light);
+}
+
+.file-name {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+
+.remove-file-btn {
+  background: none;
+  border: none;
+  color: var(--secondary-text);
+  font-size: 1.2em;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.remove-file-btn:hover {
+  background-color: var(--accent-bg);
+  color: white;
+}
+
+.message-attachments {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.attachment {
+  padding: 5px 10px;
+  background-color: var(--bg-light);
+  border-radius: 4px;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+}
+
+.attachment::before {
+  content: "📎";
+  margin-right: 5px;
+}

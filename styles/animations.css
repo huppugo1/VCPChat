@@ -1,0 +1,102 @@
+/* styles/animations.css */
+
+/* 消息动画 */
+.message {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 按钮悬停效果 */
+button:hover {
+  transform: translateY(-1px);
+  transition: transform 0.2s ease;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+/* 侧边栏切换动画 */
+.sidebar {
+  transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+}
+
+.sidebar:not(.active) {
+  transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+}
+
+.notifications-sidebar {
+  transition: width 0.3s ease-out,
+              min-width 0.3s ease-out,
+              padding 0.3s ease-out,
+              border-left-width 0.3s ease-out,
+              opacity 0.3s ease-out;
+}
+
+.notifications-sidebar:not(.active) {
+  transition: width 0.3s ease-out,
+              min-width 0.3s ease-out,
+              padding 0.3s ease-out,
+              border-left-width 0.3s ease-out,
+              opacity 0.3s ease-out;
+}
+
+/* 标题栏按钮动画 */
+.title-bar-button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--primary-text);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  padding: 0;
+  -webkit-app-region: no-drag;
+}
+
+.title-bar-button:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.title-bar-button.close-button:hover {
+  background: #e81123;
+  color: white;
+}
+
+.title-bar-button:active {
+  transform: scale(0.95);
+}
+
+.title-bar-button svg {
+  pointer-events: none;
+}
+
+/* 加载动画 */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--accent-bg);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

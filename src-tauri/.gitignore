@@ -1,0 +1,41 @@
+# Tauri 项目特有的忽略规则
+
+# 构建产物目录
+target/
+**/target/
+/release/bundle/
+/target/release/*.exe
+/target/debug/*.exe
+
+# Cargo.lock 文件（通常在二进制项目中提交，在库项目中忽略）
+# 对于 Tauri 应用，建议提交 Cargo.lock 以确保构建一致性
+# Cargo.lock
+
+# 生成的文件
+gen/
+
+# 调试和发布构建产物
+debug/
+release/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# 临时文件
+*.tmp
+*.temp
+
+# 日志文件
+*.log
+
+# 操作系统相关
+.DS_Store
+Thumbs.db
+
+# IDE 和编辑器
+.vscode/
+.idea/
+
+# 不忽略 .gitignore 文件本身
+!.gitignore

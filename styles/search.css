@@ -1,0 +1,94 @@
+/* styles/search.css */
+
+.topic-search-container {
+  margin: 10px 0;
+  position: relative;
+}
+
+.topic-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-light);
+  color: var(--primary-text);
+  font-size: 0.9em;
+}
+
+.topic-search-input:focus {
+  outline: none;
+  border-color: var(--accent-bg);
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.3);
+}
+
+.agents-header,
+.topics-header-container {
+  margin-bottom: 15px;
+}
+
+.agents-header h2,
+.topics-header-container h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.2em;
+}
+
+.agent-list,
+.topic-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.agent-list li,
+.topic-list li {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.2s;
+}
+
+.agent-list li:hover,
+.topic-list li:hover {
+  background-color: var(--bg-light);
+}
+
+.agent-list li.active,
+.topic-list li.active {
+  background-color: var(--accent-bg);
+  color: white;
+}
+
+.agent-list li img,
+.topic-list li img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.agent-list li .agent-name,
+.topic-list li .topic-name {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.sidebar-actions .sidebar-button {
+  flex: 1;
+  text-align: center;
+}

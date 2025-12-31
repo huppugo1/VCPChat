@@ -1,0 +1,52 @@
+[package]
+name = "vcpnewchat"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset", "devtools"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+indexmap = { version = "2", features = ["serde"] }
+tauri-plugin-cli = "2"
+# 精简 tokio features，只保留必要的
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "io-util", "sync"] }
+uuid = { version = "1.0", features = ["v4"] }
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+tauri-plugin-http = "2"
+tauri-plugin-fs = "2"
+percent-encoding = "2.3"
+# 精简 image features，只保留需要的格式
+image = { version = "0.24", default-features = false, features = ["jpeg", "png", "webp"] }
+rand = { version = "0.8", default-features = false, features = ["std", "std_rng"] }
+# 精简 reqwest features
+reqwest = { version = "0.11", default-features = false, features = ["json", "stream", "rustls-tls"] }
+futures = "0.3"
+base64 = "0.21"
+regex = "1"
+dirs = "5.0"
+urlencoding = "2.1"
+
+[features]
+# This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
+
+# Release 优化配置
+[profile.release]
+# 启用 LTO (Link Time Optimization)
+lto = true
+# 单个 codegen unit 可以更好地优化
+codegen-units = 1
+# 优化大小而非速度
+opt-level = "s"
+# 移除 panic 信息
+panic = "abort"
+# strip 符号
+strip = true

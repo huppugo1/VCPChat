@@ -1,0 +1,235 @@
+/* styles/topic.css */
+
+.topic-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.topic-list li {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: background-color 0.2s;
+  position: relative;
+}
+
+.topic-list li:hover {
+  background-color: var(--bg-light);
+}
+
+/* 话题删除按钮 - 默认隐藏，悬停时显示 */
+.topic-delete-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--secondary-text);
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85em;
+}
+
+.topic-list li:hover .topic-delete-btn {
+  opacity: 1;
+}
+
+.topic-delete-btn:hover {
+  background-color: rgba(229, 57, 53, 0.15);
+  color: var(--danger-color, #e53935);
+}
+
+.topic-list li.active .topic-delete-btn {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.topic-list li.active .topic-delete-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ff5252;
+}
+
+.topic-list li.active {
+  background-color: var(--accent-bg);
+  color: white;
+}
+
+.topic-list li .topic-name {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 话题项中的副标题信息（如“办公助手 12月18日 23:17”）字号更小 */
+.topic-meta {
+  font-size: 0.8em;
+  color: var(--secondary-text);
+}
+
+.unread-indicator {
+  color: var(--accent-bg);
+  font-size: 1.2em;
+  position: absolute;
+  right: 10px;
+}
+
+.topic-list li.active .unread-indicator {
+  color: white;
+}
+
+.create-topic-btn {
+  margin-top: 15px;
+  padding: 8px 12px;
+  background-color: var(--accent-bg);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s;
+}
+
+.create-topic-btn:hover {
+  opacity: 0.9;
+}
+
+.delete-topic-btn {
+  background: none;
+  border: none;
+  color: var(--secondary-text);
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5px;
+}
+
+.delete-topic-btn:hover {
+  background-color: var(--bg-light);
+  color: var(--error-color);
+}
+
+.lock-topic-btn {
+  background: none;
+  border: none;
+  color: var(--secondary-text);
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5px;
+}
+
+.lock-topic-btn:hover {
+  background-color: var(--bg-light);
+}
+
+.topic-actions {
+  display: flex;
+  align-items: center;
+}
+
+
+/* 话题标题行 - 上区域：标题在左，消息数在右 */
+.topic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+}
+
+.topic-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  font-size: 0.95em;
+}
+
+.topic-message-count {
+  flex-shrink: 0;
+  background-color: rgba(100, 100, 100, 0.2);
+  color: var(--secondary-text);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75em;
+  min-width: 20px;
+  text-align: center;
+}
+
+.topic-list li.active .topic-message-count,
+.topic-list li.is-selected .topic-message-count {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* 下区域：元信息 */
+.topic-list li .topic-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+/* 锁定状态指示器 */
+.lock-indicator {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.75em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  transition: all 0.2s;
+  background-color: rgba(100, 100, 100, 0.2);
+  color: var(--secondary-text);
+}
+
+.topic-list li.active .lock-indicator {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.topic-list li:hover .lock-indicator {
+  transform: scale(1.05);
+}
+
+/* 未读话题的消息数量样式 */
+.message-count.has-unread,
+.topic-message-count.has-unread {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(238, 90, 111, 0.4);
+}
+
+/* 仅未读标记（无计数） */
+.message-count.unread-marker-only::before,
+.topic-message-count.unread-marker-only::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #ff6b6b;
+  border-radius: 50%;
+  margin-right: 4px;
+}

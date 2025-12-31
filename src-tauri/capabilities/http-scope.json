@@ -1,0 +1,16 @@
+{
+  "identifier": "http-scope",
+  "description": "Scope for HTTP requests",
+  "windows": ["main"],
+  "permissions": [
+    "http:default",
+    "http:allow-fetch"
+  ],
+  "scope": {
+    "allow": [
+      "http://*:*/*",
+      "https://*:*/*"
+    ],
+    "deny": []
+  }
+}

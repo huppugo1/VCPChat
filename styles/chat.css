@@ -1,0 +1,198 @@
+/* styles/chat.css */
+
+/* 聊天头部 */
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--panel-bg-dark);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+body.light-theme .chat-header {
+  background-color: var(--panel-bg-light);
+}
+
+.chat-header h3 {
+  margin: 0;
+  font-size: 1.1em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* 消息显示区域 */
+.chat-messages-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+/* 自定义滚动条样式 - 匹配主题颜色 */
+.chat-messages-container {
+  scrollbar-width: thin;        /* Firefox - 细滚动条 */
+  scrollbar-color: var(--accent-bg) var(--secondary-bg);  /* Firefox - 滑块颜色 背景颜色 */
+}
+
+/* Webkit浏览器（Chrome, Safari, Edge）滚动条样式 */
+.chat-messages-container::-webkit-scrollbar {
+  width: 8px;  /* 滚动条宽度 */
+}
+
+.chat-messages-container::-webkit-scrollbar-track {
+  background: var(--secondary-bg);  /* 滚动条轨道背景 */
+  border-radius: 4px;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb {
+  background: var(--accent-bg);  /* 滚动条滑块颜色 - 使用主题色 */
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color, #007bff);  /* 悬停时更亮 */
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+
+.message.user-message {
+  align-self: flex-end;
+}
+
+.message.ai-message,
+.message.system-message {
+  align-self: flex-start;
+}
+
+.message-sender {
+  font-size: 0.8em;
+  color: var(--secondary-text);
+  margin-bottom: 5px;
+}
+
+.message-content {
+  padding: 10px 15px;
+  border-radius: 18px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.message.user-message .message-content {
+  background-color: var(--user-bubble-bg);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message.ai-message .message-content {
+  background-color: var(--assistant-bubble-bg);
+  color: var(--primary-text);
+  border-bottom-left-radius: 4px;
+}
+
+.message.system-message .message-content {
+  background-color: var(--bg-light);
+  color: var(--secondary-text);
+  border-radius: 4px;
+}
+
+/* 消息输入区域 */
+.chat-input-area {
+  display: flex;
+  padding: 15px;
+  background-color: var(--panel-bg-dark);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-color);
+}
+
+body.light-theme .chat-input-area {
+  background-color: var(--panel-bg-light);
+}
+
+.chat-input-area textarea {
+  flex-grow: 1;
+  resize: none;
+  padding: 10px;
+  border-radius: 18px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-light);
+  color: var(--primary-text);
+  font-family: var(--font-family);
+}
+
+/* 强制隐藏输入框滚动条（不滚动，依赖 JS 自动增高） */
+.chat-input-area textarea {
+  overflow: hidden;             /* 不显示滚动条，也不内部滚动 */
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE 10+ */
+}
+.chat-input-area textarea::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.chat-input-area textarea:focus {
+  outline: none;
+  border-color: var(--accent-bg);
+}
+
+.chat-input-area button {
+  margin-left: 10px;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-bg);
+  color: white;
+  cursor: pointer;
+}
+
+.chat-input-area button:disabled {
+  background-color: var(--bg-light);
+  color: var(--secondary-text);
+  cursor: not-allowed;
+}
+
+.chat-input-area button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* 头像更新动画 */
+.avatar-updating {
+  animation: avatarUpdatePulse 0.3s ease-in-out;
+}
+
+@keyframes avatarUpdatePulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
