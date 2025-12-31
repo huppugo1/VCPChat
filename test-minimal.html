@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最小测试页面</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .status {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .success {
+            color: #4caf50;
+        }
+        .error {
+            color: #f44336;
+        }
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        #log {
+            margin-top: 20px;
+            text-align: left;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ VCP Chat 最小测试</h1>
+        <div class="status success" id="status">页面已加载！</div>
+        
+        <div>
+            <button onclick="testTauri()">测试 Tauri API</button>
+            <button onclick="testWindow()">测试窗口控制</button>
+            <button onclick="location.href='index.html'">加载主页面</button>
+        </div>
+        
+        <div id="log"></div>
+    </div>
+
+    <script>
+        const logDiv = document.getElementById('log');
+        
+        function log(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const color = type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#fff';
+            logDiv.innerHTML += `<div style="color: ${color}">[${time}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${time}] ${message}`);
+        }
+
+        // 页面加载完成
+        window.addEventListener('DOMContentLoaded', () => {
+            log('✓ DOM 加载完成', 'success');
+            
+            // 检查 Tauri
+            if (window.__TAURI__) {
+                log('✓ Tauri API 可用', 'success');
+            } else {
+                log('✗ Tauri API 不可用', 'error');
+            }
+        });
+
+        async function testTauri() {
+            log('开始测试 Tauri API...');
+            
+            if (!window.__TAURI__) {
+                log('✗ Tauri API 不可用', 'error');
+                return;
+            }
+
+            try {
+                // 测试获取版本
+                if (window.__TAURI__.app?.getVersion) {
+                    const version = await window.__TAURI__.app.getVersion();
+                    log(`✓ 应用版本: ${version}`, 'success');
+                }
+
+                // 测试路径 API
+                if (window.__TAURI__.path?.appDataDir) {
+                    const appDir = await window.__TAURI__.path.appDataDir();
+                    log(`✓ AppData 路径: ${appDir}`, 'success');
+                }
+
+                log('✓ Tauri API 测试通过', 'success');
+            } catch (e) {
+                log(`✗ Tauri API 测试失败: ${e.message}`, 'error');
+            }
+        }
+
+        async function testWindow() {
+            log('开始测试窗口控制...');
+            
+            if (!window.__TAURI__) {
+                log('✗ Tauri API 不可用', 'error');
+                return;
+            }
+
+            try {
+                const appWindow = window.__TAURI__.window.getCurrent();
+                log(`✓ 当前窗口: ${appWindow.label}`, 'success');
+
+                // 测试显示窗口
+                await appWindow.show();
+                log('✓ 窗口已显示', 'success');
+
+                // 测试聚焦
+                await appWindow.setFocus();
+                log('✓ 窗口已聚焦', 'success');
+
+                log('✓ 窗口控制测试通过', 'success');
+            } catch (e) {
+                log(`✗ 窗口控制测试失败: ${e.message}`, 'error');
+            }
+        }
+
+        // 全局错误捕获
+        window.addEventListener('error', (e) => {
+            log(`✗ 全局错误: ${e.message}`, 'error');
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            log(`✗ Promise 错误: ${e.reason}`, 'error');
+        });
+
+        // 初始日志
+        log('页面脚本已加载');
+        log(`User Agent: ${navigator.userAgent}`);
+        log(`Platform: ${navigator.platform}`);
+    </script>
+</body>
+</html>

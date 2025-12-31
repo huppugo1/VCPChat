@@ -1,0 +1,123 @@
+/* style.css - Main Entry Point */
+@import url('./vendor/atom-one-dark.min.css');
+@import url('./vendor/atom-one-light.min.css');
+@import url('./styles/base.css');
+@import url('./styles/layout.css');
+@import url('./styles/components.css');
+@import url('./styles/chat.css');
+@import url('./styles/notifications.css');
+@import url('./styles/settings.css');
+@import url('./styles/animations.css');
+@import url('./styles/search.css');
+@import url('./styles/themes.css'); /* 移动到末尾以获得最高优先级 */
+
+/* 全局滚动条样式 - 匹配主题颜色 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-bg) var(--secondary-bg);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--secondary-bg);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--accent-bg);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color, #007bff);
+}
+
+/* Forward Message Modal Styles */
+#forwardMessageModal .agent-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#forwardMessageModal .agent-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin: 4px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+#forwardMessageModal .agent-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+#forwardMessageModal .agent-item.selected {
+    background-color: rgba(0, 123, 255, 0.2);
+    border-color: var(--accent-color, #007bff);
+}
+
+#forwardMessageModal .agent-item .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 12px;
+    object-fit: cover;
+}
+
+#forwardMessageModal .agent-item .agent-name {
+    color: var(--primary-text);
+    font-size: 14px;
+}
+
+#forwardMessageModal .form-group {
+    margin-bottom: 16px;
+}
+
+#forwardMessageModal .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--primary-text);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+#forwardMessageModal .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--primary-text);
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+#forwardMessageModal .form-control:focus {
+    outline: none;
+    border-color: var(--accent-color, #007bff);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+#forwardMessageModal textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+#forwardMessageModal #confirmForwardBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#forwardMessageModal #confirmForwardBtn:not(:disabled):hover {
+    background-color: var(--accent-color-hover, #0056b3);
+    transform: translateY(-1px);
+}

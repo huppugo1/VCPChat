@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCP Chat 测试页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .test-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #4caf50;
+        }
+        .test-item.error {
+            border-left-color: #f44336;
+        }
+        .test-item h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .test-item p {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.ok {
+            background: #4caf50;
+        }
+        .status.error {
+            background: #f44336;
+        }
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .info-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .info-box pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 VCP Chat 测试页面</h1>
+        
+        <div class="test-item" id="test1">
+            <h3>1. 基础渲染测试 <span class="status ok">✓ 通过</span></h3>
+            <p>如果你能看到这个页面，说明 HTML/CSS 渲染正常</p>
+        </div>
+        
+        <div class="test-item" id="test2">
+            <h3>2. JavaScript 执行测试 <span class="status" id="jsStatus">测试中...</span></h3>
+            <p id="jsResult">正在检测...</p>
+        </div>
+        
+        <div class="test-item" id="test3">
+            <h3>3. Tauri API 测试 <span class="status" id="tauriStatus">测试中...</span></h3>
+            <p id="tauriResult">正在检测...</p>
+        </div>
+        
+        <div class="test-item" id="test4">
+            <h3>4. 本地存储测试 <span class="status" id="storageStatus">测试中...</span></h3>
+            <p id="storageResult">正在检测...</p>
+        </div>
+        
+        <div class="test-item" id="test5">
+            <h3>5. 网络请求测试 <span class="status" id="networkStatus">测试中...</span></h3>
+            <p id="networkResult">正在检测...</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="runTests()">重新测试</button>
+            <button onclick="copyResults()">复制结果</button>
+            <button onclick="window.location.href='index.html'">返回主页</button>
+        </div>
+        
+        <div class="info-box">
+            <h3>系统信息</h3>
+            <pre id="systemInfo">加载中...</pre>
+        </div>
+        
+        <div class="info-box">
+            <h3>测试结果</h3>
+            <pre id="testResults">等待测试...</pre>
+        </div>
+    </div>
+    
+    <script>
+        const results = {};
+        
+        // Test 2: JavaScript
+        function testJavaScript() {
+            try {
+                const test = [1, 2, 3].map(x => x * 2);
+                document.getElementById('jsStatus').className = 'status ok';
+                document.getElementById('jsStatus').textContent = '✓ 通过';
+                document.getElementById('jsResult').textContent = 'JavaScript 引擎工作正常';
+                results.javascript = 'OK';
+            } catch (e) {
+                document.getElementById('jsStatus').className = 'status error';
+                document.getElementById('jsStatus').textContent = '✗ 失败';
+                document.getElementById('jsResult').textContent = '错误: ' + e.message;
+                results.javascript = 'ERROR: ' + e.message;
+            }
+        }
+        
+        // Test 3: Tauri API
+        async function testTauri() {
+            try {
+                if (window.__TAURI__) {
+                    document.getElementById('tauriStatus').className = 'status ok';
+                    document.getElementById('tauriStatus').textContent = '✓ 通过';
+                    document.getElementById('tauriResult').textContent = 'Tauri API 可用';
+                    results.tauri = 'OK';
+                    
+                    // Try to get app version
+                    try {
+                        const version = await window.__TAURI__.app.getVersion();
+                        document.getElementById('tauriResult').textContent += ` (版本: ${version})`;
+                    } catch (e) {
+                        // Ignore version error
+                    }
+                } else {
+                    document.getElementById('tauriStatus').className = 'status error';
+                    document.getElementById('tauriStatus').textContent = '✗ 失败';
+                    document.getElementById('tauriResult').textContent = 'Tauri API 不可用';
+                    results.tauri = 'ERROR: API not available';
+                }
+            } catch (e) {
+                document.getElementById('tauriStatus').className = 'status error';
+                document.getElementById('tauriStatus').textContent = '✗ 失败';
+                document.getElementById('tauriResult').textContent = '错误: ' + e.message;
+                results.tauri = 'ERROR: ' + e.message;
+            }
+        }
+        
+        // Test 4: Local Storage
+        function testStorage() {
+            try {
+                localStorage.setItem('test', 'value');
+                const value = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                
+                if (value === 'value') {
+                    document.getElementById('storageStatus').className = 'status ok';
+                    document.getElementById('storageStatus').textContent = '✓ 通过';
+                    document.getElementById('storageResult').textContent = 'LocalStorage 工作正常';
+                    results.storage = 'OK';
+                } else {
+                    throw new Error('读写测试失败');
+                }
+            } catch (e) {
+                document.getElementById('storageStatus').className = 'status error';
+                document.getElementById('storageStatus').textContent = '✗ 失败';
+                document.getElementById('storageResult').textContent = '错误: ' + e.message;
+                results.storage = 'ERROR: ' + e.message;
+            }
+        }
+        
+        // Test 5: Network
+        async function testNetwork() {
+            try {
+                const response = await fetch('https://www.baidu.com', { mode: 'no-cors' });
+                document.getElementById('networkStatus').className = 'status ok';
+                document.getElementById('networkStatus').textContent = '✓ 通过';
+                document.getElementById('networkResult').textContent = '网络连接正常';
+                results.network = 'OK';
+            } catch (e) {
+                document.getElementById('networkStatus').className = 'status error';
+                document.getElementById('networkStatus').textContent = '✗ 失败';
+                document.getElementById('networkResult').textContent = '错误: ' + e.message;
+                results.network = 'ERROR: ' + e.message;
+            }
+        }
+        
+        // Show system info
+        function showSystemInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                screenResolution: `${screen.width}x${screen.height}`,
+                windowSize: `${window.innerWidth}x${window.innerHeight}`,
+                colorDepth: screen.colorDepth,
+                pixelRatio: window.devicePixelRatio,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                memory: navigator.deviceMemory || 'N/A',
+                hardwareConcurrency: navigator.hardwareConcurrency || 'N/A'
+            };
+            
+            document.getElementById('systemInfo').textContent = JSON.stringify(info, null, 2);
+        }
+        
+        // Run all tests
+        async function runTests() {
+            testJavaScript();
+            await testTauri();
+            testStorage();
+            await testNetwork();
+            
+            document.getElementById('testResults').textContent = JSON.stringify(results, null, 2);
+        }
+        
+        // Copy results
+        function copyResults() {
+            const text = document.getElementById('testResults').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('测试结果已复制到剪贴板');
+            }).catch(() => {
+                alert('复制失败，请手动复制');
+            });
+        }
+        
+        // Run tests on load
+        window.addEventListener('DOMContentLoaded', () => {
+            showSystemInfo();
+            runTests();
+        });
+    </script>
+</body>
+</html>

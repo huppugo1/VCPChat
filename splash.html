@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCP Chat 启动中...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .splash-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(74, 144, 226, 0.5));
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #4a90e2, #67b8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .version {
+            font-size: 14px;
+            color: #8899aa;
+            margin-bottom: 40px;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4a90e2, #67b8ff);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+        }
+
+        .status-text {
+            font-size: 16px;
+            color: #aabbcc;
+            margin-bottom: 15px;
+            min-height: 24px;
+        }
+
+        .status-details {
+            font-size: 15px;
+            color: #667788;
+            min-height: 150px;
+            max-height: 250px;
+            overflow-y: auto;
+            text-align: left;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .status-and-tests-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .tests-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-details::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .status-details::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .status-details::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .status-item {
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .status-item.success {
+            color: #4caf50;
+        }
+
+        .status-item.error {
+            color: #f44336;
+        }
+
+        .status-item.loading {
+            color: #4a90e2;
+        }
+
+        .status-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #4a90e2;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-container {
+            display: none;
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .error-container.show {
+            display: block;
+        }
+
+        .error-title {
+            color: #f44336;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: #ffcccc;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .retry-button {
+            margin-top: 15px;
+            padding: 10px 24px;
+            background: linear-gradient(90deg, #4a90e2, #67b8ff);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .retry-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        }
+
+        .retry-button:active {
+            transform: translateY(0);
+        }
+
+        .test-panel {
+            margin-top: 0;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            min-width: 200px;
+        }
+
+        .test-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .test-panel::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .test-panel::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .test-item {
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 13px;
+        }
+
+        .test-item:last-child {
+            border-bottom: none;
+        }
+
+        .test-name {
+            color: #aabbcc;
+        }
+
+        .test-status {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .test-status.pass {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+        }
+
+        .test-status.fail {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+
+        .test-status.testing {
+            background: rgba(74, 144, 226, 0.3);
+            color: #4a90e2;
+        }
+
+        .toggle-tests-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #aabbcc;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .toggle-tests-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body style="opacity: 0; transition: opacity 0.3s;">
+    <div class="splash-container">
+        <div class="logo">
+            <img src="assets/icon.png" alt="VCP Chat Logo">
+        </div>
+        
+        <h1>VCP Chat</h1>
+        <div class="version">Tauri 版 v0.1.0</div>
+        
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+        
+        <div class="status-text" id="statusText">正在初始化...</div>
+        
+        <div class="status-and-tests-container">
+            <div class="status-details" id="statusDetails">
+                <div class="status-item loading">
+                    <span class="spinner"></span>
+                    <span>准备启动...</span>
+                </div>
+            </div>
+
+            <div class="tests-section">
+                <button class="toggle-tests-btn" onclick="toggleTests()">显示/隐藏<br>系统测试</button>
+                
+                <div class="test-panel" id="testPanel" style="display: none;">
+                    <div class="test-item">
+                        <span class="test-name">JavaScript 引擎</span>
+                        <span class="test-status testing" id="testJS">测试中</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Tauri API</span>
+                        <span class="test-status testing" id="testTauri">测试中</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">本地存储</span>
+                        <span class="test-status testing" id="testStorage">测试中</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">网络连接</span>
+                        <span class="test-status testing" id="testNetwork">测试中</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">WebView2 版本</span>
+                        <span class="test-status testing" id="testWebView">检测中</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="error-container" id="errorContainer">
+            <div class="error-title">启动失败</div>
+            <div class="error-message" id="errorMessage"></div>
+            <div style="margin-top: 15px;">
+                <button class="retry-button" onclick="location.reload()">重新启动</button>
+                <button class="retry-button" onclick="window.close()" style="margin-left: 10px; background: linear-gradient(90deg, #666, #888);">退出应用</button>
+            </div>
+            <div style="margin-top: 15px; font-size: 12px; color: #aabbcc;">
+                <p>可能的解决方案：</p>
+                <ul style="text-align: left; padding-left: 20px; line-height: 1.8;">
+                    <li>更新 WebView2 到最新版本</li>
+                    <li>以管理员身份运行应用</li>
+                    <li>检查防火墙和杀毒软件设置</li>
+                    <li>更新显卡驱动程序</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const statusText = document.getElementById('statusText');
+        const statusDetails = document.getElementById('statusDetails');
+        const loadingProgress = document.getElementById('loadingProgress');
+        const errorContainer = document.getElementById('errorContainer');
+        const errorMessage = document.getElementById('errorMessage');
+
+        let progress = 0;
+        const statusLog = [];
+        const testResults = {};
+
+        function toggleTests() {
+            const panel = document.getElementById('testPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 系统测试函数
+        function testJavaScript() {
+            try {
+                const test = [1, 2, 3].map(x => x * 2);
+                const result = JSON.stringify(test) === '[2,4,6]';
+                document.getElementById('testJS').className = 'test-status ' + (result ? 'pass' : 'fail');
+                document.getElementById('testJS').textContent = result ? '✓ 正常' : '✗ 失败';
+                testResults.javascript = result;
+                addStatus(`JavaScript: ${result ? '正常' : '失败'}`, result ? 'success' : 'error');
+            } catch (e) {
+                document.getElementById('testJS').className = 'test-status fail';
+                document.getElementById('testJS').textContent = '✗ 错误';
+                testResults.javascript = false;
+                addStatus(`JavaScript: 错误 - ${e.message}`, 'error');
+            }
+        }
+
+        async function testTauriAPI() {
+            try {
+                if (window.__TAURI__) {
+                    document.getElementById('testTauri').className = 'test-status pass';
+                    document.getElementById('testTauri').textContent = '✓ 可用';
+                    testResults.tauri = true;
+                    addStatus('Tauri API: 可用', 'success');
+                    
+                    // 尝试获取版本
+                    try {
+                        if (window.__TAURI__.app?.getVersion) {
+                            const version = await window.__TAURI__.app.getVersion();
+                            addStatus(`应用版本: ${version}`, 'success');
+                        }
+                    } catch (e) {
+                        // 忽略版本获取错误
+                    }
+                } else {
+                    document.getElementById('testTauri').className = 'test-status fail';
+                    document.getElementById('testTauri').textContent = '✗ 不可用';
+                    testResults.tauri = false;
+                    addStatus('Tauri API: 不可用', 'error');
+                }
+            } catch (e) {
+                document.getElementById('testTauri').className = 'test-status fail';
+                document.getElementById('testTauri').textContent = '✗ 错误';
+                testResults.tauri = false;
+                addStatus(`Tauri API: 错误 - ${e.message}`, 'error');
+            }
+        }
+
+        function testLocalStorage() {
+            try {
+                localStorage.setItem('splash_test', 'ok');
+                const value = localStorage.getItem('splash_test');
+                localStorage.removeItem('splash_test');
+                const result = value === 'ok';
+                document.getElementById('testStorage').className = 'test-status ' + (result ? 'pass' : 'fail');
+                document.getElementById('testStorage').textContent = result ? '✓ 正常' : '✗ 失败';
+                testResults.storage = result;
+                addStatus(`本地存储: ${result ? '正常' : '失败'}`, result ? 'success' : 'error');
+            } catch (e) {
+                document.getElementById('testStorage').className = 'test-status fail';
+                document.getElementById('testStorage').textContent = '✗ 错误';
+                testResults.storage = false;
+                addStatus(`本地存储: 错误 - ${e.message}`, 'error');
+            }
+        }
+
+        async function testNetwork() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                
+                await fetch('https://www.baidu.com', { 
+                    mode: 'no-cors',
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                document.getElementById('testNetwork').className = 'test-status pass';
+                document.getElementById('testNetwork').textContent = '✓ 正常';
+                testResults.network = true;
+                addStatus('网络连接: 正常', 'success');
+            } catch (e) {
+                document.getElementById('testNetwork').className = 'test-status fail';
+                document.getElementById('testNetwork').textContent = '✗ 失败';
+                testResults.network = false;
+                addStatus(`网络连接: ${e.name === 'AbortError' ? '超时' : '失败'}`, 'error');
+            }
+        }
+
+        function testWebView() {
+            try {
+                const ua = navigator.userAgent;
+                const webViewMatch = ua.match(/Edg\/([\d.]+)/);
+                if (webViewMatch) {
+                    const version = webViewMatch[1];
+                    document.getElementById('testWebView').className = 'test-status pass';
+                    document.getElementById('testWebView').textContent = `✓ ${version}`;
+                    testResults.webview = version;
+                    addStatus(`WebView2: ${version}`, 'success');
+                } else {
+                    document.getElementById('testWebView').className = 'test-status fail';
+                    document.getElementById('testWebView').textContent = '✗ 未检测到';
+                    testResults.webview = false;
+                    addStatus('WebView2: 未检测到', 'error');
+                }
+            } catch (e) {
+                document.getElementById('testWebView').className = 'test-status fail';
+                document.getElementById('testWebView').textContent = '✗ 错误';
+                testResults.webview = false;
+                addStatus(`WebView2: 错误 - ${e.message}`, 'error');
+            }
+        }
+
+        // 运行所有测试
+        async function runSystemTests() {
+            testJavaScript();
+            await testTauriAPI();
+            testLocalStorage();
+            testWebView();
+            // 网络测试放在后台，不阻塞启动
+            testNetwork().catch(() => {});
+        }
+
+        function addStatus(message, type = 'loading') {
+            const timestamp = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+            statusLog.push({ message, type, timestamp });
+            
+            // 只保留最近10条
+            if (statusLog.length > 10) {
+                statusLog.shift();
+            }
+            
+            updateStatusDisplay();
+        }
+
+        function updateStatusDisplay() {
+            statusDetails.innerHTML = statusLog.map(item => {
+                let icon = '<span class="spinner"></span>';
+                if (item.type === 'success') {
+                    icon = '<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>';
+                } else if (item.type === 'error') {
+                    icon = '<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+                }
+                
+                return `<div class="status-item ${item.type}">
+                    ${icon}
+                    <span>[${item.timestamp}] ${item.message}</span>
+                </div>`;
+            }).join('');
+            
+            // 自动滚动到底部
+            statusDetails.scrollTop = statusDetails.scrollHeight;
+        }
+
+        function updateProgress(percent, message) {
+            progress = Math.min(percent, 100);
+            loadingProgress.style.width = progress + '%';
+            statusText.textContent = message;
+            addStatus(message, 'loading');
+        }
+
+        function showError(error) {
+            console.error('Startup error:', error);
+            
+            // 尝试获取更详细的错误信息
+            let detailedError = error;
+            if (typeof error === 'object') {
+                try {
+                    detailedError = JSON.stringify(error, null, 2);
+                } catch (e) {
+                    detailedError = error.toString();
+                }
+            }
+            
+            addStatus(`错误: ${error}`, 'error');
+            errorMessage.textContent = detailedError;
+            errorContainer.classList.add('show');
+            statusText.textContent = '启动失败';
+            
+            // 停止加载进度
+            loadingProgress.style.width = '100%';
+            loadingProgress.style.background = 'linear-gradient(90deg, #f44336, #ff5252)';
+            
+            // 打印到控制台
+            console.error('[Startup] Detailed error:', {
+                error,
+                type: typeof error,
+                stack: error?.stack,
+                message: error?.message,
+                name: error?.name
+            });
+            
+            // 显示错误提示
+            statusText.style.color = '#f44336';
+            
+            // 自动显示测试面板
+            const testPanel = document.getElementById('testPanel');
+            if (testPanel) {
+                testPanel.style.display = 'block';
+            }
+        }
+
+        function completeLoading() {
+            updateProgress(100, '启动完成');
+            addStatus('应用已就绪', 'success');
+            
+            // 检查是否有严重错误
+            if (hasCriticalError()) {
+                console.warn('[Splash] Critical errors detected, not loading main window');
+                updateProgress(100, '启动失败 - 请查看错误信息');
+                return; // 不加载主窗口
+            }
+            
+            // 计算已经显示的时间
+            const elapsedTime = performance.now() - window.splashStartTime;
+            const minDisplayTime = 3000; // 改为 3 秒
+            const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
+            
+            if (remainingTime > 0) {
+                console.log(`[Splash] Waiting ${(remainingTime / 1000).toFixed(1)}s before loading main window`);
+                updateProgress(100, `准备就绪，${Math.ceil(remainingTime / 1000)} 秒后进入应用...`);
+                
+                // 倒计时显示
+                let countdown = Math.ceil(remainingTime / 1000);
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    if (countdown > 0) {
+                        updateProgress(100, `准备就绪，${countdown} 秒后进入应用...`);
+                    } else {
+                        clearInterval(countdownInterval);
+                        updateProgress(100, '正在进入应用...');
+                    }
+                }, 1000);
+                
+                setTimeout(() => {
+                    console.log('[Splash] Minimum display time reached, ready for main window');
+                }, remainingTime);
+            } else {
+                console.log('[Splash] Loading complete, waiting for backend to show main window');
+            }
+        }
+        
+        // 检查是否有严重错误
+        function hasCriticalError() {
+            // Tauri API 不可用
+            if (testResults.tauri === false) {
+                return true;
+            }
+            
+            // WebView2 未检测到
+            if (testResults.webview === false) {
+                return true;
+            }
+            
+            // JavaScript 引擎失败
+            if (testResults.javascript === false) {
+                return true;
+            }
+            
+            return false;
+        }
+
+        // 启动流程 - 异步预加载主窗口资源
+        async function startupSequence() {
+            try {
+                updateProgress(5, '正在进行系统检测...');
+                
+                // 运行系统测试（不阻塞启动）
+                await runSystemTests();
+                
+                // 检查是否有严重错误
+                if (hasCriticalError()) {
+                    throw new Error('系统环境检测失败，无法继续启动');
+                }
+                
+                updateProgress(10, '正在加载 Tauri API...');
+                
+                // 等待 Tauri API 加载
+                let tauriReady = false;
+                for (let i = 0; i < 50; i++) {
+                    if (window.__TAURI__) {
+                        tauriReady = true;
+                        break;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                if (!tauriReady) {
+                    throw new Error('Tauri API 加载超时');
+                }
+                
+                addStatus('Tauri API 已加载', 'success');
+                updateProgress(20, '正在检查系统环境...');
+                
+                // 检查文件系统权限（不阻塞启动）
+                try {
+                    if (window.__TAURI__?.path?.appDataDir) {
+                        const appDir = await window.__TAURI__.path.appDataDir();
+                        addStatus('文件系统权限正常', 'success');
+                        console.log('[Startup] App data directory:', appDir);
+                    }
+                } catch (e) {
+                    addStatus('文件系统警告（不影响启动）', 'error');
+                    console.warn('[Startup] Filesystem warning:', e);
+                }
+                
+                updateProgress(30, '正在预加载关键资源...');
+                
+                // 简化：不做资源检查，直接继续
+                addStatus('跳过资源检查，加快启动速度', 'success');
+                
+                updateProgress(50, '正在准备应用...');
+                
+                // 给一点时间让主窗口准备
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                addStatus('应用准备就绪', 'success');
+                updateProgress(70, '正在初始化...');
+                
+                // 简化：减少不必要的等待
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                updateProgress(85, '准备完成...');
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                updateProgress(95, '即将启动...');
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                completeLoading();
+                
+            } catch (error) {
+                showError(error.message || '未知错误');
+            }
+        }
+
+        // 全局错误捕获
+        window.addEventListener('error', (e) => {
+            showError(`全局错误: ${e.message}`);
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            showError(`Promise 错误: ${e.reason}`);
+        });
+
+        // 显示窗口（内容已加载）
+        async function showSplashWindow() {
+            console.log('[Splash] showSplashWindow called');
+            
+            // 记录启动时间到 localStorage
+            const startTime = performance.now();
+            try {
+                localStorage.setItem('app_start_time', startTime.toString());
+                console.log('[Splash] Start time saved:', startTime);
+            } catch (e) {
+                console.warn('[Splash] Failed to save start time:', e);
+            }
+            
+            try {
+                // 先显示内容（淡入效果）
+                document.body.style.opacity = '1';
+                console.log('[Splash] Content visible');
+                
+                // 等待 Tauri API（最多等待 5 秒）
+                let retries = 0;
+                while (!window.__TAURI__ && retries < 100) {
+                    await new Promise(r => setTimeout(r, 50));
+                    retries++;
+                    if (retries % 20 === 0) {
+                        console.log('[Splash] Waiting for Tauri API...', retries * 50, 'ms');
+                    }
+                }
+                
+                if (window.__TAURI__) {
+                    console.log('[Splash] Tauri API available, showing window...');
+                    const appWindow = window.__TAURI__.window.getCurrent();
+                    await appWindow.show();
+                    console.log('[Splash] ✓ Window shown successfully');
+                } else {
+                    console.warn('[Splash] Tauri API timeout, but content is visible');
+                }
+            } catch (e) {
+                console.error('[Splash] Error:', e);
+                // 确保内容可见
+                document.body.style.opacity = '1';
+            }
+        }
+
+        // 开始启动
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', async () => {
+                await showSplashWindow();
+                startupSequence();
+            });
+        } else {
+            showSplashWindow().then(() => startupSequence());
+        }
+    </script>
+</body>
+</html>

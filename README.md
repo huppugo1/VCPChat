@@ -410,46 +410,46 @@ npm run build
 ## 开发模式
 ```bash
 # 首次安装依赖
-cd f:\woker\vcp\vcpnewchat-tauri && npm install
+npm install
 
 # 启动开发服务器（带热重载）
-cd f:\woker\vcp\vcpnewchat-tauri && npm run tauri dev
+npm run tauri dev
 
 # 或者分步执行：
 # 1. 编译前端
-cd f:\woker\vcp\vcpnewchat-tauri && npm run build
+npm run build
 
 # 2. 编译后端（Rust）
-cd f:\woker\vcp\vcpnewchat-tauri\src-tauri && cargo build --release
+cargo build --release
 
 # 3. 运行编译后的程序
-cd f:\woker\vcp\vcpnewchat-tauri\src-tauri && cargo run --release
+cargo run --release
 ```
 
 ### 打包发布
 ```bash
 # 或者使用 Tauri CLI 直接打包
-cd f:\woker\vcp\vcpnewchat-tauri && npm run tauri build
+npm run tauri build
 ```
 
 ### 常用命令
 ```bash
 # 清理构建缓存
-cd f:\woker\vcp\vcpnewchat-tauri && rmdir /s /q dist
-cd f:\woker\vcp\vcpnewchat-tauri\src-tauri && cargo clean
+rm -r -fo dist
+cargo clean
 
 # 仅构建前端
-cd f:\woker\vcp\vcpnewchat-tauri && npm run build
+npm run build
 
 # 仅构建后端
-cd f:\woker\vcp\vcpnewchat-tauri\src-tauri && cargo build --release
+cargo build --release
 
 # 检查 Rust 代码
-cd f:\woker\vcp\vcpnewchat-tauri\src-tauri && cargo check
+cargo check
 
 # 更新依赖
-cd f:\woker\vcp\vcpnewchat-tauri && npm update
-cd f:\woker\vcp\vcpnewchat-tauri\src-tauri && cargo update
+npm update
+cargo update
 ```
 
 **开发服务器特性**：
@@ -725,9 +725,60 @@ try {
 
 ## 📦 构建部署
 
-### 发布前准备
+### 自动发布（推荐）⭐
 
-在构建生产版本前，请确保：
+项目已配置 GitHub Actions 自动构建和发布系统。
+
+#### 快速发布流程
+
+```bash
+# 1. 更新版本号（自动更新所有配置文件）
+# Windows CMD
+scripts\update-version.bat 0.2.0
+
+# Windows PowerShell
+.\scripts\update-version.ps1 0.2.0
+
+# Linux/macOS
+chmod +x scripts/update-version.sh
+./scripts/update-version.sh 0.2.0
+
+# 2. 更新 CHANGELOG.md（记录本次更新内容）
+
+# 3. 提交并打标签
+git add .
+git commit -m "chore: release v0.2.0"
+git tag -a v0.2.0 -m "Release v0.2.0"
+
+# 4. 推送到 GitHub（触发自动构建）
+git push origin main
+git push origin v0.2.0
+```
+
+#### 自动构建内容
+
+推送标签后，GitHub Actions 会自动：
+- ✅ 构建 Windows/Linux/macOS 所有平台
+- ✅ 生成安装包和绿色版
+- ✅ 创建 GitHub Release
+- ✅ 上传构建产物
+- ✅ 生成 SHA256 校验和
+
+查看构建进度：`Actions` 标签页
+
+#### 详细文档
+
+- [发布指南](.github/RELEASE_GUIDE.md) - 完整发布流程
+- [构建产物说明](.github/BUILD_ARTIFACTS.md) - 各平台安装包说明
+- [更新日志](CHANGELOG.md) - 版本历史记录
+
+---
+
+### 手动构建
+
+如果需要本地构建或自动构建失败：
+
+#### 发布前准备
 
 1. **关闭开发者工具**（推荐）
 
@@ -751,13 +802,7 @@ try {
 
 3. **更新版本号**
    
-   编辑 `src-tauri/tauri.conf.json`：
-   ```json
-   {
-     "version": "0.2.0",  // 更新版本号
-     "productName": "VCP Chat - tauri版v0.2.0"
-   }
-   ```
+   使用版本更新脚本（推荐）或手动编辑配置文件
 
 ### 开发构建
 
@@ -1049,6 +1094,16 @@ AppData/
 </details>
 
 ---
+
+## 运行目录结构:
+vcpnewchat.exe:客户端
+AppData:用户资源目录
+
+注意：
+1.AppData目录考到当前目录下
+2.assets目录放到AppData目录下
+3.styles目录放到AppData/assets目录下
+
 
 ## 🐛 常见问题
 

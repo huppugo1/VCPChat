@@ -1,0 +1,98 @@
+/* styles/animations.css */
+
+@keyframes vcp-shimmer-bg {
+    0% { background-position: 150% 0; }
+    100% { background-position: -150% 0; }
+}
+
+@keyframes blinkColon {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+}
+
+.digital-clock .colon {
+    animation: blinkColon 2s infinite;
+    position: relative;
+}
+
+@keyframes st-colon-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+}
+
+@keyframes st-soft-circular-ripple-effect {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.7;
+    }
+    80% {
+        transform: translate(-50%, -50%) scale(18);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+}
+
+.topic-item.active-topic-glowing {
+    position: relative;
+    overflow: hidden;
+}
+
+.topic-item.active-topic-glowing::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    background-image: radial-gradient(
+        circle,
+        rgba(190, 210, 240, 0.45) 0%,
+        rgba(190, 210, 240, 0.3) 40%,
+        rgba(190, 210, 240, 0) 70%
+    );
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    animation: st-soft-circular-ripple-effect 3.8s ease-out infinite;
+    z-index: 0;
+    pointer-events: none;
+}
+body.light-theme .topic-item.active-topic-glowing::before {
+    background-image: radial-gradient(
+        circle,
+        rgba(65, 144, 213, 0.041) 0%,
+        rgba(56, 131, 196, 0.358) 40%,
+        rgba(14, 78, 134, 0) 70%
+    ) !important;
+}
+
+
+
+/*
+ * =======================================================
+ * TTS 朗读中：头像呼吸发光效果
+ * =======================================================
+ */
+@keyframes speaking-glow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 5px rgba(0, 150, 255, 0.5), 0 0 10px rgba(0, 150, 255, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 150, 255, 0.8), 0 0 25px rgba(0, 150, 255, 0.6);
+  }
+}
+
+.chat-avatar.speaking {
+  animation: speaking-glow 2s ease-in-out infinite;
+  cursor: pointer; /* Indicate it's clickable */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* =======================================================
+ * VCPChat Title: Animated Gradient Text (Removed for performance)
+ * ======================================================= */

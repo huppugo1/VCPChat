@@ -1,0 +1,55 @@
+# 忽略的文件和目录
+
+# 构建产物
+/dist
+/build
+/out
+assets
+
+# 日志文件
+*.log
+logs/
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 编辑器和操作系统
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Tauri 相关
+src-tauri/target/
+src-tauri/**/target/
+target/
+**/target/
+src-tauri/Cargo.lock
+
+# AppData 目录（运行时数据，不纳入版本控制）
+AppData/
+
+# 构建产物
+vcpnewchat.exe
+*.msi
+*.deb
+*.rpm
+*.AppImage
+*.dmg
+*.app
+
+# 临时文件
+*.bak
+*.tmp
+*.temp
+
+# 不忽略重要配置文件
+!.gitignore
+!.github/
