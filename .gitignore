@@ -4,7 +4,7 @@
 /dist
 /build
 /out
-assets
+
 
 # 日志文件
 *.log
