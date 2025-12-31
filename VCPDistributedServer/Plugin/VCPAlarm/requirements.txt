@@ -1,3 +1,0 @@
-dateparser
-pygame
-Pillow
