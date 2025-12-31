@@ -139,6 +139,17 @@ jobs:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: --target ${{ matrix.target }}
 
+      - name: Upload portable exe (Windows only)
+        if: matrix.platform == 'windows-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.release_upload_url }}
+          asset_path: src-tauri/target/${{ matrix.target }}/release/vcpnewchat.exe
+          asset_name: vcpnewchat_${{ needs.create-release.outputs.release_version }}_x64_portable.exe
+          asset_content_type: application/octet-stream
+
   update-release-notes:
     needs: [create-release, build-tauri]
     runs-on: ubuntu-latest

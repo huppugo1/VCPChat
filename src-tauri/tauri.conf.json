@@ -58,7 +58,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": "nsis",
+    "targets": ["nsis", "msi"],
     "icon": [
       "icons/icon.png",
       "icons/icon.ico"
@@ -70,7 +70,7 @@
       },
       "nsis": {
         "installerIcon": "icons/icon.ico",
-        "installMode": "perMachine",
+        "installMode": "both",
         "languages": ["SimpChinese"],
         "displayLanguageSelector": false
       }
