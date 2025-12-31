@@ -19,7 +19,7 @@
         "width": 1200,
         "height": 800,
         "decorations": false,
-        "devtools": true,
+        "devtools": false,
         "visible": true
       }
     ],
@@ -58,7 +58,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "msi"],
+    "targets": ["nsis"],
     "icon": [
       "icons/icon.png",
       "icons/icon.ico"

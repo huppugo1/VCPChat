@@ -71,6 +71,14 @@ jobs:
             ### 🐛 问题反馈
             
             如遇到问题，请在 [Issues](../../issues) 中反馈。
+            ### 运行目录结构:
+              vcpnewchat.exe:客户端
+              AppData:用户资源目录
+
+              注意：
+              1.AppData目录考到当前目录下
+              2.assets目录放到AppData目录下
+              3.styles目录放到AppData/assets目录下
           draft: false
           prerelease: false
 
@@ -132,15 +140,17 @@ jobs:
         run: npm run build
 
       - name: Build Tauri app
+        id: build-tauri
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: --target ${{ matrix.target }}
+        continue-on-error: true
 
       - name: Upload portable exe (Windows only)
-        if: matrix.platform == 'windows-latest'
+        if: matrix.platform == 'windows-latest' && steps.build-tauri.outcome == 'success'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -149,6 +159,10 @@ jobs:
           asset_path: src-tauri/target/${{ matrix.target }}/release/vcpnewchat.exe
           asset_name: vcpnewchat_${{ needs.create-release.outputs.release_version }}_x64_portable.exe
           asset_content_type: application/octet-stream
+
+      - name: Fail if build failed
+        if: steps.build-tauri.outcome == 'failure'
+        run: exit 1
 
   update-release-notes:
     needs: [create-release, build-tauri]
